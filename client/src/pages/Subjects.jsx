@@ -175,9 +175,9 @@ const Subjects = () => {
                       onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
                       className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer"
                     >
-                      <option className="bg-[#1a1a2e] text-white" value="easy">Low</option>
-                      <option className="bg-[#1a1a2e] text-white" value="medium">Medium</option>
-                      <option className="bg-[#1a1a2e] text-white" value="hard">High</option>
+                      <option className="bg-white text-black" value="easy">Low</option>
+                      <option className="bg-white text-black" value="medium">Medium</option>
+                      <option className="bg-white text-black" value="hard">High</option>
                     </select>
                   </div>
                   <div>
