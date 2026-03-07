@@ -24,6 +24,7 @@ const topicRoutes = require("./routes/topicRoutes");
 const studyPlanRoutes = require("./routes/studyPlanRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const studySessionRoutes = require("./routes/studySessionRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
@@ -31,6 +32,7 @@ app.use("/api/topics", topicRoutes);
 app.use("/api/study-plan", studyPlanRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sessions", studySessionRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // SPA fallback - serve index.html for client routes (Express 5 uses /{*path} for catch-all)
 app.get("/{*path}", (req, res) => {

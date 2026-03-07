@@ -1,5 +1,6 @@
 const Topic = require("../models/Topic");
 const Subject = require("../models/Subject");
+const Task = require("../models/Task");
 
 const verifySubjectOwnership = async (subjectId, userId) => {
   const subject = await Subject.findOne({ _id: subjectId, userId });
@@ -115,6 +116,8 @@ const updateTopic = async (req, res) => {
       });
     }
 
+    const previousStatus = topic.completionStatus;
+
     if (name !== undefined) topic.name = name;
     if (estimatedHours !== undefined) topic.estimatedHours = estimatedHours;
     if (difficulty !== undefined) topic.difficulty = difficulty;
@@ -122,6 +125,27 @@ const updateTopic = async (req, res) => {
       topic.completionStatus = completionStatus;
 
     await topic.save();
+
+    // Trigger Spaced Repetition if topic just got completed
+    if (previousStatus !== "completed" && topic.completionStatus === "completed") {
+      const today = new Date();
+      const intervals = [2, 5, 10];
+
+      const revisionTasks = intervals.map((days) => {
+        const scheduledDate = new Date(today);
+        scheduledDate.setDate(today.getDate() + days);
+        return {
+          topicId: topic._id,
+          subjectId: topic.subjectId,
+          userId,
+          scheduledDate,
+          duration: 0.5, // 30 mins revision
+          status: "pending",
+        };
+      });
+
+      await Task.insertMany(revisionTasks);
+    }
 
     res.status(200).json({
       success: true,
