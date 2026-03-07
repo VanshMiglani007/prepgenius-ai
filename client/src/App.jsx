@@ -7,6 +7,7 @@ import Landing from './pages/Landing'; // Newly created landing demo
 import Subjects from './pages/Subjects'; // New Subjects View
 import Topics from './pages/Topics'; // New Topics View
 import StudyPlan from './pages/StudyPlan'; // New StudyPlan View
+import Analytics from './pages/Analytics'; // New Analytics View
 
 class ErrorBoundary extends Component {
   state = { hasError: false, error: null };
@@ -38,7 +39,7 @@ function App() {
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/topics" element={<Topics />} />
             <Route path="/study-plan" element={<StudyPlan />} />
-            <Route path="/analytics" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/analytics" element={<Analytics />} />
 
           </Routes>
         </div>

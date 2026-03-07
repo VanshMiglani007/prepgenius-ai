@@ -122,9 +122,9 @@ const Topics = () => {
               onChange={(e) => setFilterSubject(e.target.value)}
               className="bg-dark-surface border border-white/20 rounded-full px-4 py-3 text-sm text-white outline-none focus:border-primary transition-colors hover:cursor-pointer flex-1 md:flex-none"
             >
-              <option value="">All Subjects</option>
+              <option className="bg-[#1a1a2e] text-white" value="">All Subjects</option>
               {subjects.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
+                <option className="bg-[#1a1a2e] text-white" key={s._id} value={s._id}>{s.name}</option>
               ))}
             </select>
             
@@ -243,7 +243,7 @@ const Topics = () => {
                       onChange={(e) => setFormData({...formData, subjectId: e.target.value})}
                       className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer"
                     >
-                      {subjects.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                      {subjects.map(s => <option className="bg-[#1a1a2e] text-white" key={s._id} value={s._id}>{s.name}</option>)}
                     </select>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -254,9 +254,9 @@ const Topics = () => {
                         onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
                         className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer"
                       >
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
+                        <option className="bg-[#1a1a2e] text-white" value="easy">Low</option>
+                        <option className="bg-[#1a1a2e] text-white" value="medium">Medium</option>
+                        <option className="bg-[#1a1a2e] text-white" value="hard">High</option>
                       </select>
                     </div>
                     <div>
