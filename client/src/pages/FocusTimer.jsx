@@ -6,11 +6,15 @@ import api from '../services/api';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 
 const FocusTimer = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const initialTopic = searchParams.get('topic') || '';
+
   const [topics, setTopics] = useState([]);
-  const [selectedTopic, setSelectedTopic] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState(initialTopic);
   
   // Timer states
   const WORK_TIME = 25 * 60;

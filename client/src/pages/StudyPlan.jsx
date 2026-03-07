@@ -3,8 +3,10 @@ import Navbar from '../components/Navbar';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, Clock, Play, AlertCircle, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const StudyPlan = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ hoursPerDay: 4, startDate: new Date().toISOString().split('T')[0] });
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -186,7 +188,10 @@ const StudyPlan = () => {
                                   </div>
                                   
                                   {/* Future feature: Launch Pomodoro directly from study plan */}
-                                  <button className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-primary hover:text-dark-bg transition-all group-hover:scale-110">
+                                  <button 
+                                    onClick={() => navigate(`/timer?topic=${task.topicId}`)}
+                                    className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-primary hover:text-dark-bg transition-all group-hover:scale-110"
+                                  >
                                     <Play size={16} className="ml-1" />
                                   </button>
                                </div>
