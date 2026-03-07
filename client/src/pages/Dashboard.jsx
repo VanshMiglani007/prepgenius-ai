@@ -78,28 +78,28 @@ const Dashboard = () => {
           animate="show"
         >
           {/* Action Card 1 */}
-          <motion.div variants={itemVars} className="action-card flex flex-col items-center">
+          <motion.div variants={itemVars} onClick={() => window.location.href='/subjects'} className="action-card flex flex-col items-center">
             <Book size={40} className="text-primary mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Subjects</h3>
             <p className="text-sm text-white/70">Manage your classes</p>
           </motion.div>
 
           {/* Action Card 2 */}
-          <motion.div variants={itemVars} className="action-card flex flex-col items-center">
+          <motion.div variants={itemVars} onClick={() => window.location.href='/topics'} className="action-card flex flex-col items-center">
             <CheckSquare size={40} className="text-primary mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Topics</h3>
             <p className="text-sm text-white/70">{stats.topicsCompleted} / {stats.totalTopics} Completed</p>
           </motion.div>
 
           {/* Action Card 3 */}
-          <motion.div variants={itemVars} className="action-card flex flex-col items-center">
+          <motion.div variants={itemVars} onClick={() => window.location.href='/study-plan'} className="action-card flex flex-col items-center">
             <CalendarDays size={40} className="text-primary mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Study Plan</h3>
             <p className="text-sm text-white/70">Generate your schedule</p>
           </motion.div>
 
           {/* New Progress Insight */}
-          <motion.div variants={itemVars} className="action-card flex flex-col items-center">
+          <motion.div variants={itemVars} onClick={() => window.location.href='/analytics'} className="action-card flex flex-col items-center">
             <TrendingUp size={40} className="text-primary mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Today's Focus</h3>
             <p className="text-sm text-white/70">{stats.dailyStudyHours} hrs completed</p>
