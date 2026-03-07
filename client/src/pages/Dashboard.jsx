@@ -4,9 +4,11 @@ import { Book, CheckSquare, CalendarDays, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     topicsCompleted: 0,
     totalTopics: 0,
@@ -54,36 +56,49 @@ const Dashboard = () => {
       
       <main className="flex-1 px-8 md:px-10 max-w-7xl mx-auto w-full pt-4">
         <div 
-          className="brand-border py-8 px-10 mb-10 text-left"
+          className="brand-border py-8 px-10 mb-10 text-left flex justify-between items-center"
         >
-          <h2 className="text-[28px] font-bold mb-3 text-white">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h2>
-           <p className="text-white/85 text-[16px] leading-[1.6]">
-            Your intelligent exam preparation planner. Organize subjects, manage topics, and optimize your study schedule.
-          </p>
+          <div>
+            <h2 className="text-[28px] font-bold mb-3 text-white">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h2>
+            <p className="text-white/85 text-[16px] leading-[1.6]">
+              Your intelligent exam preparation planner. Organize subjects, manage topics, and optimize your study schedule.
+            </p>
+          </div>
+          <div className="text-right hidden sm:block">
+             <p className="text-sm text-primary font-semibold mb-1 uppercase tracking-wider">Productivity Score</p>
+             <h1 className="text-5xl font-bold font-sans text-white">{stats.productivityScore}%</h1>
+          </div>
         </div>
 
         <div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {/* Action Card 1 */}
-          <div onClick={() => window.location.href='/subjects'} className="action-card flex flex-col items-center">
+          <div onClick={() => navigate('/subjects')} className="action-card flex flex-col items-center">
             <Book size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
             <h3 className="text-[18px] font-semibold mb-[8px] text-white">Subjects</h3>
-            <p className="text-[13px] text-white/70">Manage your subjects</p>
+            <p className="text-[13px] text-white/70">Manage your classes</p>
           </div>
 
           {/* Action Card 2 */}
-          <div onClick={() => window.location.href='/topics'} className="action-card flex flex-col items-center">
+          <div onClick={() => navigate('/topics')} className="action-card flex flex-col items-center">
             <CheckSquare size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
             <h3 className="text-[18px] font-semibold mb-[8px] text-white">Topics</h3>
-            <p className="text-[13px] text-white/70">Organize topics per subject</p>
+            <p className="text-[13px] text-white/70">{stats.topicsCompleted} / {stats.totalTopics} Completed</p>
           </div>
 
           {/* Action Card 3 */}
-          <div onClick={() => window.location.href='/study-plan'} className="action-card flex flex-col items-center">
+          <div onClick={() => navigate('/study-plan')} className="action-card flex flex-col items-center">
             <CalendarDays size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
             <h3 className="text-[18px] font-semibold mb-[8px] text-white">Study Plan</h3>
             <p className="text-[13px] text-white/70">Generate your schedule</p>
+          </div>
+
+          {/* New Progress Insight */}
+          <div onClick={() => navigate('/analytics')} className="action-card flex flex-col items-center">
+            <TrendingUp size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
+            <h3 className="text-[18px] font-semibold mb-[8px] text-white">Today's Focus</h3>
+            <p className="text-[13px] text-white/70">{stats.dailyStudyHours} hrs completed</p>
           </div>
         </div>
       </main>
