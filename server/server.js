@@ -1,28 +1,39 @@
-const express = require("express")
-const mongoose = require("mongoose")
-const dotenv = require("dotenv")
-const cors = require("cors")
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const path = require("path");
 
-dotenv.config()
+dotenv.config({ path: path.join(__dirname, ".env") });
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
-console.log("Mongo URI:", process.env.MONGO_URI)
+// Serve static files from client
+app.use(express.static(path.join(__dirname, "../client")));
 
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err))
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-const authRoutes = require("./routes/authRoutes")
-app.use("/api/auth", authRoutes)
+const authRoutes = require("./routes/authRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
+const topicRoutes = require("./routes/topicRoutes");
 
-app.get("/", (req,res)=>{
-    res.send("PrepGenius API Running")
-})
+app.use("/api/auth", authRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/topics", topicRoutes);
 
-app.listen(process.env.PORT, ()=>{
-    console.log(`Server running on port ${process.env.PORT}`)
-})
+// SPA fallback - serve index.html for client routes (Express 5 uses /{*path} for catch-all)
+app.get("/{*path}", (req, res) => {
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ success: false, message: "API route not found" });
+  }
+  res.sendFile(path.join(__dirname, "../client/index.html"));
+});
+
+app.listen(process.env.PORT, () => {
+  console.log("Server running on port " + process.env.PORT);
+});

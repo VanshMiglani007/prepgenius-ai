@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepGenius AI - Login & Signup</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="auth-wrapper">
+        <div class="background-shape"></div>
+        <div class="secondary-shape"></div>
+        <div class="credentials-panel signin">
+            <h2 class="slide-element">Login</h2>
+            <form id="loginForm" action="#" method="post">
+                <div class="field-wrapper slide-element">
+                    <input type="email" id="loginEmail" name="email" required>
+                    <label for="loginEmail">Email</label>
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+
+                <div class="field-wrapper slide-element">
+                    <input type="password" id="loginPassword" name="password" required>
+                    <label for="loginPassword">Password</label>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div id="loginError" class="error-message slide-element"></div>
+
+                <div class="field-wrapper slide-element">
+                    <button class="submit-button" type="submit" id="loginBtn">Login</button>
+                </div>
+
+                <div class="switch-link slide-element">
+                    <p>Don't have an account? <br> <a href="#" class="register-trigger">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="welcome-section signin">
+            <h2 class="slide-element">WELCOME BACK!</h2>
+        </div>
+
+        <div class="credentials-panel signup">
+            <h2 class="slide-element">Register</h2>
+            <form id="signupForm" action="#" method="post">
+                <div class="field-wrapper slide-element">
+                    <input type="text" id="signupName" name="name" required>
+                    <label for="signupName">Name</label>
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="field-wrapper slide-element">
+                    <input type="email" id="signupEmail" name="email" required>
+                    <label for="signupEmail">Email</label>
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+
+                <div class="field-wrapper slide-element">
+                    <input type="password" id="signupPassword" name="password" required minlength="6">
+                    <label for="signupPassword">Password</label>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div id="signupError" class="error-message slide-element"></div>
+
+                <div class="field-wrapper slide-element">
+                    <button class="submit-button" type="submit" id="signupBtn">Register</button>
+                </div>
+
+                <div class="switch-link slide-element">
+                    <p>Already have an account? <br> <a href="#" class="login-trigger">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="welcome-section signup">
+            <h2 class="slide-element">WELCOME!</h2>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>PrepGenius AI — Intelligent Exam Preparation</p>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
