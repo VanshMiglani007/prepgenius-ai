@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Auth from './pages/Auth';
 import Landing from './pages/Landing'; // Newly created landing demo
 import Subjects from './pages/Subjects'; // New Subjects View
+import Topics from './pages/Topics'; // New Topics View
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
           
           {/* Work-in-progress routes tied to Dashboard clicks */}
           <Route path="/subjects" element={<Subjects />} />
-          <Route path="/topics" element={<div className="flex h-screen items-center justify-center font-bold text-2xl text-primary">Topics Page Coming Soon</div>} />
+          <Route path="/topics" element={<Topics />} />
           <Route path="/study-plan" element={<div className="flex h-screen items-center justify-center font-bold text-2xl text-primary">Study Planner Coming Soon</div>} />
           <Route path="/analytics" element={<div className="flex h-screen items-center justify-center font-bold text-2xl text-primary">Analytics Coming Soon</div>} />
 
