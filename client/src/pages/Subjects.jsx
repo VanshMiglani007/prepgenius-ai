@@ -4,8 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit2, BookOpen, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Subjects = () => {
+  const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -121,7 +123,7 @@ const Subjects = () => {
                           {sub.examDate ? new Date(sub.examDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set'}
                         </p>
                     </div>
-                    <button onClick={() => window.location.href=`/topics?subject=${sub._id}`} className="text-sm text-primary hover:underline font-medium flex items-center gap-1">
+                    <button onClick={() => navigate(`/topics?subject=${sub._id}`)} className="text-sm text-primary hover:underline font-medium flex items-center gap-1">
                       View Topics <ArrowRight size={14} />
                     </button>
                   </div>

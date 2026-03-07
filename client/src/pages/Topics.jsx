@@ -3,9 +3,10 @@ import Navbar from '../components/Navbar';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const Topics = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialSubject = searchParams.get('subject') || '';
   
@@ -219,7 +220,7 @@ const Topics = () => {
               {subjects.length === 0 ? (
                 <div className="text-center py-6">
                    <p className="text-red-400 mb-4">You need to create a Subject first.</p>
-                   <button onClick={() => window.location.href='/subjects'} className="btn-outline inline-flex w-full justify-center">Go to Subjects</button>
+                   <button onClick={() => navigate('/subjects')} className="btn-outline inline-flex w-full justify-center">Go to Subjects</button>
                 </div>
               ) : (
                 <form onSubmit={handleCreateTopic} className="space-y-5">
