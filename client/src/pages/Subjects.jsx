@@ -17,7 +17,7 @@ const Subjects = () => {
     try {
       const res = await api.get('/subjects');
       if (res.data.success) {
-        setSubjects(res.data.data);
+        setSubjects(res.data.data.subjects || []);
       }
     } catch (err) {
       console.error("Failed to load subjects:", err);
@@ -35,7 +35,7 @@ const Subjects = () => {
     try {
       await api.post('/subjects', formData);
       setIsModalOpen(false);
-      setFormData({ name: '', examDate: '', difficulty: 'Medium', color: '#00d4ff' });
+      setFormData({ name: '', examDate: '', difficulty: 'medium', color: '#00d4ff' });
       fetchSubjects(); // refresh
     } catch (err) {
       console.error("Failed to create subject:", err);
@@ -108,9 +108,9 @@ const Subjects = () => {
                   
                   <h3 className="text-2xl font-bold mb-1 truncate pr-16">{sub.name}</h3>
                   <div className="flex items-center gap-2 mb-4">
-                     <span className={`px-3 py-1 rounded-full text-xs font-semibold
-                        ${sub.difficulty === 'High' ? 'bg-red-500/20 text-red-400' : 
-                          sub.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' : 
+                     <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
+                        ${sub.difficulty === 'hard' ? 'bg-red-500/20 text-red-400' : 
+                          sub.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : 
                           'bg-green-500/20 text-green-400'}`}>
                         {sub.difficulty}
                      </span>
@@ -175,9 +175,9 @@ const Subjects = () => {
                       onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
                       className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer"
                     >
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
+                      <option value="easy">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="hard">High</option>
                     </select>
                   </div>
                   <div>

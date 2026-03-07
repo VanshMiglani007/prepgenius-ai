@@ -214,9 +214,33 @@ const deleteTopic = async (req, res) => {
   }
 };
 
+const getAllTopics = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const subjects = await Subject.find({ userId });
+    const subjectIds = subjects.map((s) => s._id);
+
+    const topics = await Topic.find({ subjectId: { $in: subjectIds } })
+      .populate('subjectId', 'name color')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: { topics },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching topics.",
+    });
+  }
+};
+
 module.exports = {
   createTopic,
   getTopicsBySubject,
+  getAllTopics,
   updateTopic,
   deleteTopic,
 };

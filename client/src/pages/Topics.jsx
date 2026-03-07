@@ -19,7 +19,7 @@ const Topics = () => {
     name: '', 
     subjectId: initialSubject, 
     estimatedHours: 2, 
-    difficulty: 'Medium' 
+    difficulty: 'medium' 
   });
   
   const [filterSubject, setFilterSubject] = useState(initialSubject);
@@ -31,12 +31,12 @@ const Topics = () => {
         api.get('/subjects')
       ]);
       
-      if (topicsRes.data.success) setTopics(topicsRes.data.data);
-      if (subjectsRes.data.success) setSubjects(subjectsRes.data.data);
+      if (topicsRes.data.success) setTopics(topicsRes.data.data.topics || []);
+      if (subjectsRes.data.success) setSubjects(subjectsRes.data.data.subjects || []);
       
       // Auto-select first subject if creating a topic and none is selected
-      if (!formData.subjectId && subjectsRes.data.data.length > 0) {
-        setFormData(prev => ({ ...prev, subjectId: subjectsRes.data.data[0]._id }));
+      if (!formData.subjectId && subjectsRes.data.data.subjects?.length > 0) {
+        setFormData(prev => ({ ...prev, subjectId: subjectsRes.data.data.subjects[0]._id }));
       }
     } catch (err) {
       console.error("Failed to load data:", err);
@@ -47,14 +47,14 @@ const Topics = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [initialSubject]);
 
   const handleCreateTopic = async (e) => {
     e.preventDefault();
     try {
       await api.post('/topics', formData);
       setIsModalOpen(false);
-      setFormData({ ...formData, name: '' });
+      setFormData({ ...formData, name: '', difficulty: 'medium' });
       fetchData(); // refresh
     } catch (err) {
       console.error("Failed to create topic:", err);
