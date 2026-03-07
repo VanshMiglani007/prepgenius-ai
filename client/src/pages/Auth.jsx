@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 const Auth = () => {
@@ -8,6 +9,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login, register } = useAuth();
 
   // Form states
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -25,13 +27,10 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      // Temporary simulated login (API connection comes next)
-      console.log('Logging in with:', loginForm);
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
+      await login(loginForm.email, loginForm.password);
+      navigate('/dashboard');
     } catch (err) {
-      setError('Cannot connect to server.');
+      setError(err.message || 'Login failed. Check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -43,13 +42,10 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      // Temporary simulated signup (API connection comes next)
-      console.log('Signing up with:', signupForm);
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
+      await register(signupForm.name, signupForm.email, signupForm.password);
+      navigate('/dashboard');
     } catch (err) {
-      setError('Cannot connect to server.');
+      setError(err.message || 'Registration failed.');
     } finally {
       setIsLoading(false);
     }

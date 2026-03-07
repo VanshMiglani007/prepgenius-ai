@@ -1,13 +1,15 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Dashboard from './pages/Dashboard';
 import Auth from './pages/Auth';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-dark-bg">        
-        <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-dark-bg">        
+          <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Auth />} />
           
@@ -15,6 +17,7 @@ function App() {
         </Routes>
       </div>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
