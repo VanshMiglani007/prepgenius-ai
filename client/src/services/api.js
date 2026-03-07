@@ -1,4 +1,4 @@
-import axios from 'react';
+import axios from 'axios';
 
 // Connect to the local Express backend running on port 5000
 const API_URL = 'http://localhost:5000/api';
