@@ -16,7 +16,7 @@ const StudyPlan = () => {
     setError('');
     
     try {
-      const res = await api.post('/studyPlan/generate', formData);
+      const res = await api.post('/study-plan/generate', formData);
       if (res.data.success) {
         setPlan(res.data.data);
       } else {

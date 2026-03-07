@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import { Book, CheckSquare, CalendarDays, TrendingUp } from 'lucide-react';
+import { Book, CheckSquare, CalendarDays, TrendingUp, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -94,8 +94,15 @@ const Dashboard = () => {
             <p className="text-[13px] text-white/70">Generate your schedule</p>
           </div>
 
+          {/* Action Card 4 */}
+          <div onClick={() => navigate('/timer')} className="action-card flex flex-col items-center">
+            <Target size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
+            <h3 className="text-[18px] font-semibold mb-[8px] text-white">Focus Timer</h3>
+            <p className="text-[13px] text-white/70">Start a Pomodoro session</p>
+          </div>
+
           {/* New Progress Insight */}
-          <div onClick={() => navigate('/analytics')} className="action-card flex flex-col items-center">
+          <div onClick={() => navigate('/analytics')} className="action-card flex flex-col items-center sm:col-span-2 lg:col-span-1">
             <TrendingUp size={36} strokeWidth={2.5} className="text-primary mb-[15px]" />
             <h3 className="text-[18px] font-semibold mb-[8px] text-white">Today's Focus</h3>
             <p className="text-[13px] text-white/70">{stats.dailyStudyHours} hrs completed</p>

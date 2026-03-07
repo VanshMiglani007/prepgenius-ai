@@ -8,6 +8,7 @@ import Subjects from './pages/Subjects'; // New Subjects View
 import Topics from './pages/Topics'; // New Topics View
 import StudyPlan from './pages/StudyPlan'; // New StudyPlan View
 import Analytics from './pages/Analytics'; // New Analytics View
+import FocusTimer from './pages/FocusTimer'; // Pomodoro Focus Timer
 
 class ErrorBoundary extends Component {
   state = { hasError: false, error: null };
@@ -39,6 +40,7 @@ function App() {
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/topics" element={<Topics />} />
             <Route path="/study-plan" element={<StudyPlan />} />
+            <Route path="/timer" element={<FocusTimer />} />
             <Route path="/analytics" element={<Analytics />} />
 
           </Routes>

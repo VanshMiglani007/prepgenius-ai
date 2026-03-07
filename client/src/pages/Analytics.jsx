@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { Target, BarChart2, TrendingUp, Calendar, Clock } from 'lucide-react';
 import api from '../services/api';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Analytics = () => {
   const { user } = useAuth();
@@ -12,6 +13,15 @@ const Analytics = () => {
     productivityScore: 0,
     dailyStudyHours: 0,
     overallProgress: 0,
+    weeklyData: [
+      { name: 'Mon', hours: 0 },
+      { name: 'Tue', hours: 0 },
+      { name: 'Wed', hours: 0 },
+      { name: 'Thu', hours: 0 },
+      { name: 'Fri', hours: 0 },
+      { name: 'Sat', hours: 0 },
+      { name: 'Sun', hours: 0 },
+    ]
   });
 
   useEffect(() => {
@@ -19,7 +29,11 @@ const Analytics = () => {
       try {
         const res = await api.get('/analytics/dashboard');
         if (res.data.success) {
-          setStats(res.data.data);
+          // Merge real backend data with the default structure
+          setStats(prev => ({
+            ...prev,
+            ...res.data.data
+          }));
         }
       } catch (error) {
         console.error("Failed to fetch analytics:", error);
@@ -35,47 +49,90 @@ const Analytics = () => {
         <div className="mb-10">
           <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
             <TrendingUp className="text-primary" size={32} />
-            Today's Focus & Analytics
+            Performance Analytics
           </h1>
-          <p className="text-white/60">Track your productivity score, study hours, and performance trends.</p>
+          <p className="text-white/60">Visualize your productivity, track study hours, and monitor completed topics.</p>
         </div>
         
-        <div className="bg-dark-surface border border-primary/20 rounded-3xl p-10 text-center relative overflow-hidden">
-           {/* Decorative background glow */}
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+        {/* Top Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 relative z-10">
+          <div className="bg-dark-surface border-t-4 border-primary p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
+            <div className="flex justify-between items-start mb-4">
+              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Today's Focus</h4>
+              <Clock size={20} className="text-primary" />
+            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.dailyStudyHours} <span className="text-lg text-white/30 font-medium">hrs</span></p>
+            <p className="text-xs text-green-400">+1.2 hrs from yesterday</p>
+          </div>
+          
+          <div className="bg-dark-surface border-t-4 border-indigo-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
+            <div className="flex justify-between items-start mb-4">
+              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Productivity Level</h4>
+              <BarChart2 size={20} className="text-indigo-400" />
+            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.productivityScore}%</p>
+            <div className="w-full bg-white/10 rounded-full h-1.5 mt-2">
+              <div className="bg-indigo-400 h-1.5 rounded-full" style={{ width: `${stats.productivityScore}%` }}></div>
+            </div>
+          </div>
+          
+          <div className="bg-dark-surface border-t-4 border-emerald-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
+            <div className="flex justify-between items-start mb-4">
+              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Topics Mastered</h4>
+              <Calendar size={20} className="text-emerald-400" />
+            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.topicsCompleted} <span className="text-lg text-white/30 font-medium">/ {stats.totalTopics}</span></p>
+            <p className="text-xs text-white/40">Total active curriculum</p>
+          </div>
 
-           <Target size={64} className="mx-auto text-primary/40 mb-6 relative z-10" />
-           <h2 className="text-3xl font-bold mb-4 text-white relative z-10">Advanced Analytics Engine</h2>
-           <p className="text-white/60 max-w-xl mx-auto mb-10 relative z-10">
-             We are currently crunching your study data history. Detailed statistical charts, Spaced Repetition efficiency graphs, and Focus tracking will appear here soon.
-           </p>
-           
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 relative z-10">
-             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center hover:border-primary/50 transition-colors">
-               <Clock size={32} strokeWidth={1.5} className="text-primary mb-3" />
-               <h4 className="text-xs uppercase tracking-wider text-white/40 mb-1">Today's Focus</h4>
-               <p className="text-3xl font-bold text-white">{stats.dailyStudyHours} <span className="text-lg text-white/50">hrs</span></p>
-             </div>
-             
-             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center hover:border-primary/50 transition-colors">
-               <BarChart2 size={32} strokeWidth={1.5} className="text-primary mb-3" />
-               <h4 className="text-xs uppercase tracking-wider text-white/40 mb-1">Productivity Score</h4>
-               <p className="text-3xl font-bold text-white">{stats.productivityScore}%</p>
-             </div>
-             
-             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center hover:border-primary/50 transition-colors">
-               <Calendar size={32} strokeWidth={1.5} className="text-primary mb-3" />
-               <h4 className="text-xs uppercase tracking-wider text-white/40 mb-1">Topics Completed</h4>
-               <p className="text-3xl font-bold text-white">{stats.topicsCompleted} <span className="text-lg text-white/50">/ {stats.totalTopics}</span></p>
-             </div>
+          <div className="bg-dark-surface border-t-4 border-fuchsia-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
+            <div className="flex justify-between items-start mb-4">
+              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Overall Course Progress</h4>
+              <TrendingUp size={20} className="text-fuchsia-400" />
+            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.overallProgress}%</p>
+            <div className="w-full bg-white/10 rounded-full h-1.5 mt-2">
+              <div className="bg-fuchsia-400 h-1.5 rounded-full" style={{ width: `${stats.overallProgress}%` }}></div>
+            </div>
+          </div>
+        </div>
 
-             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center hover:border-primary/50 transition-colors">
-               <TrendingUp size={32} strokeWidth={1.5} className="text-primary mb-3" />
-               <h4 className="text-xs uppercase tracking-wider text-white/40 mb-1">Overall Progress</h4>
-               <p className="text-3xl font-bold text-white">{stats.overallProgress}%</p>
-             </div>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           <div className="lg:col-span-2 bg-dark-surface border border-white/5 p-8 rounded-3xl">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                 <BarChart2 className="text-primary" size={24} /> Learning Velocity (Past 7 Days)
+              </h3>
+              <div className="h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stats.weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
+                    <Tooltip 
+                      cursor={{ fill: 'rgba(0,212,255,0.05)' }}
+                      contentStyle={{ backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
+                      itemStyle={{ color: '#00d4ff', fontWeight: 'bold' }}
+                    />
+                    <Bar dataKey="hours" name="Study Hours" fill="#00d4ff" radius={[6, 6, 0, 0]} maxBarSize={50} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+           </div>
+
+           <div className="bg-dark-surface border border-white/5 p-8 rounded-3xl flex flex-col justify-center text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full"></div>
+              <Target size={48} className="mx-auto text-primary/40 mb-4 relative z-10" />
+              <h3 className="text-2xl font-bold mb-2 relative z-10">Keep the momentum!</h3>
+              <p className="text-white/60 text-sm mb-6 relative z-10">Your spaced repetition algorithm predicts optimal memory retention if you review topics within 48 hours.</p>
+              
+              <div className="p-4 bg-white/5 rounded-xl border border-white/10 relative z-10">
+                 <p className="text-xs uppercase tracking-wider text-emerald-400 font-bold mb-1">Recommendation</p>
+                 <p className="text-sm font-medium">Complete 1 Pomodoro session today to reach your weekly streak goal.</p>
+              </div>
            </div>
         </div>
+
       </main>
     </div>
   );
