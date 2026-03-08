@@ -17,13 +17,13 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
         <motion.div 
           initial={{ scale: 0.95, opacity: 0, y: 10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 10 }}
           transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
-          className="bg-[#1a1a2e] border border-white/10 shadow-2xl rounded-2xl w-full max-w-4xl h-[70vh] flex overflow-hidden relative"
+          className="bg-[#1a1a2e] border border-white/10 shadow-2xl rounded-2xl w-full max-w-4xl h-[70vh] min-h-[500px] flex overflow-hidden relative"
         >
           {/* Sidebar */}
           <div className="w-64 bg-black/20 border-r border-white/5 flex flex-col pt-6">

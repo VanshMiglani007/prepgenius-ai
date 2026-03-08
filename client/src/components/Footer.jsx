@@ -8,8 +8,8 @@ const Footer = () => {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   return (
-    <footer className="w-full bg-dark-bg/80 backdrop-blur-md border-t border-white/5 py-12 px-6 md:px-20 mt-auto relative z-40">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+    <footer className="w-full bg-dark-bg/80 backdrop-blur-md border-t border-white/5 py-8 px-6 md:px-20 mt-auto relative z-40">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         
         {/* Brand Section */}
         <div className="flex flex-col gap-4 max-w-sm">
@@ -56,7 +56,7 @@ const Footer = () => {
       </div>
 
       {/* Divider */}
-      <div className="w-full h-px bg-white/5 my-8 max-w-7xl mx-auto"></div>
+      <div className="w-full h-px bg-white/5 my-6 max-w-7xl mx-auto"></div>
 
       {/* Copyright & Developed By */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
