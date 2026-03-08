@@ -4,29 +4,29 @@ import { useLocation } from 'react-router-dom';
 
 const transitions = {
   crush: {
-    initial: { opacity: 0, scale: 1.1, filter: "blur(10px)" },
-    animate: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, scale: 0.2, rotate: 15, skew: "25deg", filter: "blur(20px) contrast(200%)", transition: { duration: 0.8, ease: "easeInOut" } }
+    initial: { opacity: 0, scale: 0.95, y: -20 },
+    animate: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.4, ease: "easeIn" } }
   },
   curtains: {
-    initial: { opacity: 0, scaleY: 0, originY: 0 },
-    animate: { opacity: 1, scaleY: 1, transition: { duration: 0.7, ease: "circOut" } },
-    exit: { opacity: 0, scaleY: 0, originY: 1, transition: { duration: 0.7, ease: "circIn" } }
+    initial: { opacity: 0, y: 50 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, y: -50, transition: { duration: 0.4, ease: "easeIn" } }
   },
   slice: {
-    initial: { opacity: 0, x: window.innerWidth || 1000, skewX: "-20deg" },
-    animate: { opacity: 1, x: 0, skewX: "0deg", transition: { duration: 0.6, type: "spring", bounce: 0.2 } },
-    exit: { opacity: 0, x: -(window.innerWidth || 1000), skewX: "20deg", transition: { duration: 0.5, ease: "easeIn" } }
+    initial: { opacity: 0, x: 50 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, x: -50, transition: { duration: 0.4, ease: "easeIn" } }
   },
   drop: {
-    initial: { opacity: 0, y: -500, rotate: -10 },
-    animate: { opacity: 1, y: 0, rotate: 0, transition: { duration: 0.7, type: "spring", bounce: 0.4 } },
-    exit: { opacity: 0, y: 500, rotate: 10, transition: { duration: 0.6, ease: "anticipate" } }
+    initial: { opacity: 0, scale: 1.05 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.4, ease: "easeIn" } }
   },
   flip: {
-    initial: { opacity: 0, rotateY: 90 },
-    animate: { opacity: 1, rotateY: 0, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { opacity: 0, rotateY: -90, transition: { duration: 0.6, ease: "easeIn" } }
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.4, ease: "easeIn" } }
   }
 };
 
