@@ -66,10 +66,6 @@ const Footer = () => {
           <span className="text-primary font-semibold hover:text-white transition-colors cursor-pointer">Vansh</span>
         </p>
       </div>
-    </footer>
-  );
-};
-
       {/* Terms & Conditions Modal */}
       <AnimatePresence>
         {isTermsOpen && (
@@ -150,6 +146,9 @@ const Footer = () => {
           </div>
         )}
       </AnimatePresence>
+    </footer>
+  );
+};
 
 const SocialIcon = ({ icon, href }) => (
   <a 
