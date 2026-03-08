@@ -16,7 +16,6 @@ import AdvancedCursor from './components/AdvancedCursor';
 import PageTransition from './components/PageTransition';
 import { AnimatePresence } from 'framer-motion';
 import AIBackground from './components/AIBackground';
-import AuthRoute from './components/AuthRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
