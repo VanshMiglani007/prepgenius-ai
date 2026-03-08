@@ -11,14 +11,14 @@ export default {
       },
       colors: {
         primary: {
-          DEFAULT: 'rgb(var(--color-primary) / <alpha-value>)',
-          hover: 'rgb(var(--color-primary-hover) / <alpha-value>)',
-          glow: 'rgb(var(--color-primary) / 0.25)',
+          DEFAULT: 'rgb(var(--color-primary))',
+          hover: 'rgb(var(--color-primary-hover))',
+          glow: 'rgba(var(--color-primary), 0.25)',
         },
         dark: {
-          bg: 'rgb(var(--color-bg) / <alpha-value>)',
-          surface: 'rgb(var(--color-primary) / 0.06)',
-          surfaceHover: 'rgb(var(--color-primary) / 0.08)',
+          bg: 'rgb(var(--color-bg))',
+          surface: 'rgba(var(--color-primary), 0.06)',
+          surfaceHover: 'rgba(var(--color-primary), 0.08)',
         },
         error: '#ff6b6b'
       },

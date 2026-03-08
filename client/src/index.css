@@ -6,27 +6,27 @@
 
 @layer base {
   :root {
-    --color-primary: 0 212 255;
-    --color-primary-hover: 0 184 212;
-    --color-bg: 26 26 46;
+    --color-primary: 0, 212, 255;
+    --color-primary-hover: 0, 184, 212;
+    --color-bg: 26, 26, 46;
   }
   
   [data-theme='purple'] {
-    --color-primary: 176 38 255;
-    --color-primary-hover: 144 20 224;
-    --color-bg: 19 10 33;
+    --color-primary: 176, 38, 255;
+    --color-primary-hover: 144, 20, 224;
+    --color-bg: 19, 10, 33;
   }
 
   [data-theme='emerald'] {
-    --color-primary: 16 185 129;
-    --color-primary-hover: 5 150 105;
-    --color-bg: 6 31 21;
+    --color-primary: 16, 185, 129;
+    --color-primary-hover: 5, 150, 105;
+    --color-bg: 6, 31, 21;
   }
 
   [data-theme='amber'] {
-    --color-primary: 245 158 11;
-    --color-primary-hover: 217 119 6;
-    --color-bg: 40 20 10;
+    --color-primary: 245, 158, 11;
+    --color-primary-hover: 217, 119, 6;
+    --color-bg: 40, 20, 10;
   }
 
   body {
