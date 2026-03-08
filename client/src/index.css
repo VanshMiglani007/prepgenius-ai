@@ -5,22 +5,49 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-primary: 0 212 255;
+    --color-primary-hover: 0 184 212;
+    --color-bg: 26 26 46;
+  }
+  
+  [data-theme='purple'] {
+    --color-primary: 176 38 255;
+    --color-primary-hover: 144 20 224;
+    --color-bg: 19 10 33;
+  }
+
+  [data-theme='emerald'] {
+    --color-primary: 16 185 129;
+    --color-primary-hover: 5 150 105;
+    --color-bg: 6 31 21;
+  }
+
+  [data-theme='amber'] {
+    --color-primary: 245 158 11;
+    --color-primary-hover: 217 119 6;
+    --color-bg: 40 20 10;
+  }
+
   body {
-    @apply bg-dark-bg text-white font-sans antialiased overflow-x-hidden min-h-screen flex flex-col;
+    background-color: rgb(var(--color-bg));
+    color: white;
+    @apply font-sans antialiased overflow-x-hidden min-h-screen flex flex-col;
   }
 }
 
 @layer components {
   /* Adapted from user's custom CSS */
   .brand-border {
-    @apply border-2 border-primary shadow-[0_0_20px_rgba(0,212,255,0.15)];
+    @apply border-2 border-primary;
+    box-shadow: 0 0 20px rgb(var(--color-primary) / 0.15);
     border-radius: 16px;
-    background: rgba(0, 212, 255, 0.08);
+    background: rgb(var(--color-primary) / 0.08);
   }
 
   .action-card {
-    background: rgba(0, 212, 255, 0.06);
-    border: 2px solid rgba(0, 212, 255, 0.5);
+    background: rgb(var(--color-primary) / 0.06);
+    border: 2px solid rgb(var(--color-primary) / 0.5);
     border-radius: 16px;
     padding: 30px;
     text-align: center;
@@ -29,8 +56,8 @@
   }
 
   .action-card:hover {
-    border-color: #00d4ff;
-    box-shadow: 0 0 25px rgba(0, 212, 255, 0.25);
+    border-color: rgb(var(--color-primary));
+    box-shadow: 0 0 25px rgb(var(--color-primary) / 0.25);
     transform: translateY(-4px);
   }
   

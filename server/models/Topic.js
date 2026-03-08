@@ -12,6 +12,11 @@ const topicSchema = new mongoose.Schema(
       default: 1,
       min: 0.5,
     },
+    completedHours: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     difficulty: {
       type: String,
       enum: ["easy", "medium", "hard"],
@@ -21,6 +26,11 @@ const topicSchema = new mongoose.Schema(
       type: String,
       enum: ["not_started", "in_progress", "completed"],
       default: "not_started",
+    },
+    priority: {
+      type: String,
+      enum: ["High", "Medium", "Low"],
+      default: "Medium",
     },
     subjectId: {
       type: mongoose.Schema.Types.ObjectId,

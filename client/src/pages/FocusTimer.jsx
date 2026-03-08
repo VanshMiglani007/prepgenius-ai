@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { Play, Pause, RotateCcw, Target, AlertCircle } from 'lucide-react';
 import api from '../services/api';
@@ -149,9 +148,7 @@ const FocusTimer = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-white">
-      <Navbar />
-
-      <main className="flex-1 p-10 max-w-7xl mx-auto w-full flex flex-col items-center">
+      <main className="flex-1 p-10 max-w-7xl mx-auto w-full flex flex-col items-center pt-24">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
             <Target className="text-primary" size={32} />

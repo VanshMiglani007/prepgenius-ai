@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { Target, BarChart2, TrendingUp, Calendar, Clock } from 'lucide-react';
 import api from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ActivityHeatmap from '../components/ActivityHeatmap';
 
 const Analytics = () => {
   const { user } = useAuth();
@@ -21,19 +21,30 @@ const Analytics = () => {
       { name: 'Fri', hours: 0 },
       { name: 'Sat', hours: 0 },
       { name: 'Sun', hours: 0 },
-    ]
+    ],
+    historicalData: []
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await api.get('/analytics/dashboard');
-        if (res.data.success) {
-          // Merge real backend data with the default structure
+        const [dashRes, dailyRes] = await Promise.all([
+          api.get('/analytics/dashboard'),
+          api.get('/analytics/daily')
+        ]);
+
+        if (dashRes.data.success) {
           setStats(prev => ({
             ...prev,
-            ...res.data.data
+            ...dashRes.data.data
           }));
+        }
+
+        if (dailyRes.data.success) {
+           setStats(prev => ({
+             ...prev,
+             historicalData: dailyRes.data.data.analytics
+           }));
         }
       } catch (error) {
         console.error("Failed to fetch analytics:", error);
@@ -44,8 +55,7 @@ const Analytics = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-white">
-      <Navbar />
-      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative">
+      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative pt-24">
         <div className="mb-10">
           <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
             <TrendingUp className="text-primary" size={32} />
@@ -95,6 +105,11 @@ const Analytics = () => {
               <div className="bg-fuchsia-400 h-1.5 rounded-full" style={{ width: `${stats.overallProgress}%` }}></div>
             </div>
           </div>
+        </div>
+
+        {/* Heatmap Section */}
+        <div className="mb-10">
+           <ActivityHeatmap data={stats.historicalData} />
         </div>
 
         {/* Charts Section */}

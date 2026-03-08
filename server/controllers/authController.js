@@ -38,6 +38,9 @@ const signupUser = async (req, res) => {
           name: user.name,
           email: user.email,
           createdAt: user.createdAt,
+          dailyGoalHours: user.dailyGoalHours,
+          currentStreak: user.currentStreak,
+          lastStudyDate: user.lastStudyDate,
         },
         token,
       },
@@ -104,6 +107,9 @@ const loginUser = async (req, res) => {
           name: user.name,
           email: user.email,
           createdAt: user.createdAt,
+          dailyGoalHours: user.dailyGoalHours,
+          currentStreak: user.currentStreak,
+          lastStudyDate: user.lastStudyDate,
         },
         token,
       },
@@ -128,6 +134,9 @@ const getProfile = async (req, res) => {
           name: user.name,
           email: user.email,
           createdAt: user.createdAt,
+          dailyGoalHours: user.dailyGoalHours,
+          currentStreak: user.currentStreak,
+          lastStudyDate: user.lastStudyDate,
         },
       },
     });
@@ -139,8 +148,42 @@ const getProfile = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const { name, dailyGoalHours } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (name) user.name = name;
+    if (dailyGoalHours !== undefined) user.dailyGoalHours = dailyGoalHours;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt,
+          dailyGoalHours: user.dailyGoalHours,
+          currentStreak: user.currentStreak,
+          lastStudyDate: user.lastStudyDate,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error updating profile.",
+    });
+  }
+};
+
 module.exports = {
   signupUser,
   loginUser,
   getProfile,
+  updateProfile,
 };

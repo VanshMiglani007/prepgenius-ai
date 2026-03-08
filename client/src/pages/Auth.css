@@ -19,6 +19,7 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    z-index: 20;
 }
 
 .credentials-panel.signin {
@@ -208,6 +209,7 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    z-index: 20;
 }
 
 .welcome-section.signin {
@@ -279,6 +281,7 @@
     transform-origin: bottom right;
     transition: 1.5s ease;
     transition-delay: 1.6s;
+    z-index: 1;
 }
 
 .auth-wrapper.toggled .background-shape {
@@ -298,9 +301,42 @@
     transform-origin: bottom left;
     transition: 1.5s ease;
     transition-delay: .5s;
+    z-index: 1;
 }
 
 .auth-wrapper.toggled .secondary-shape {
     transform: rotate(-11deg) skewY(-41deg);
     transition-delay: 1.2s;
+}
+
+.mascot-wrapper {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 30;
+    transition: transform 0.7s ease;
+}
+
+.mascot-wrapper.toggled {
+    transform: translateY(-50%) translateX(-100%);
+}
+
+@media (max-width: 650px) {
+    .mascot-wrapper {
+        display: none; /* Hide on very small screens to save space */
+    }
+}
+
+@media (max-width: 850px) {
+    .mascot-wrapper {
+        width: 40%;
+        right: 5%;
+    }
 }

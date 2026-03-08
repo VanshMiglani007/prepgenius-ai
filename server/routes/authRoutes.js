@@ -4,11 +4,13 @@ const {
   signupUser,
   loginUser,
   getProfile,
+  updateProfile,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 
 router.post("/signup", signupUser);
 router.post("/login", loginUser);
 router.get("/profile", protect, getProfile);
+router.post("/update-profile", protect, updateProfile);
 
 module.exports = router;

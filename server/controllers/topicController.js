@@ -129,7 +129,7 @@ const updateTopic = async (req, res) => {
     // Trigger Spaced Repetition if topic just got completed
     if (previousStatus !== "completed" && topic.completionStatus === "completed") {
       const today = new Date();
-      const intervals = [2, 5, 10];
+      const intervals = [1, 3, 7, 14];
 
       const revisionTasks = intervals.map((days) => {
         const scheduledDate = new Date(today);

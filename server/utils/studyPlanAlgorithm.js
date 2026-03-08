@@ -2,6 +2,7 @@ const Subject = require("../models/Subject");
 const Topic = require("../models/Topic");
 
 const DIFFICULTY_WEIGHT = { easy: 1, medium: 2, hard: 3 };
+const PRIORITY_WEIGHT = { Low: 1, Medium: 2, High: 3 };
 
 /**
  * Calculate urgency based on days until exam.
@@ -44,14 +45,20 @@ const generateStudyPlan = async (options) => {
   const topicWithPriority = topics.map((topic) => {
     const subject = subjectMap.get(topic.subjectId.toString());
     const difficultyWeight = DIFFICULTY_WEIGHT[topic.difficulty] || 2;
+    const priorityWeight = PRIORITY_WEIGHT[topic.priority] || 2;
     const urgency = subject ? getUrgency(subject.examDate, refDate) : 1;
-    const priorityScore = difficultyWeight * urgency;
+    const priorityScore = difficultyWeight * urgency * priorityWeight;
+    
+    // Calculate actual remaining hours needed
+    const remainingHours = Math.max(0, topic.estimatedHours - (topic.completedHours || 0));
+
     return {
       topicId: topic._id,
       topicName: topic.name,
       subjectId: subject?._id,
       subjectName: subject?.name,
-      estimatedHours: topic.estimatedHours,
+      estimatedHours: remainingHours,
+      totalEstimated: topic.estimatedHours,
       difficulty: topic.difficulty,
       examDate: subject?.examDate,
       priorityScore,

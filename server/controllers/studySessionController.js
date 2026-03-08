@@ -1,5 +1,7 @@
 const StudySession = require("../models/StudySession");
 const Task = require("../models/Task");
+const Topic = require("../models/Topic");
+const User = require("../models/User");
 
 // Helper to calculate difference in minutes
 const calculateDurationInMinutes = (startTime, endTime) => {
@@ -82,6 +84,46 @@ const endSession = async (req, res) => {
     session.completed = true;
 
     await session.save();
+
+    // V2: Update Topic Progress and User Streaks
+    if (session.topicId) {
+      const topic = await Topic.findById(session.topicId);
+      if (topic) {
+        topic.completedHours += (session.duration / 60);
+        if (topic.completedHours >= topic.estimatedHours && topic.completionStatus !== 'completed') {
+            topic.completionStatus = 'in_progress';
+        } else if (topic.completionStatus === 'not_started') {
+            topic.completionStatus = 'in_progress';
+        }
+        await topic.save();
+      }
+    }
+
+    const userObj = await User.findById(userId);
+    if (userObj) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const lastStudy = userObj.lastStudyDate ? new Date(userObj.lastStudyDate) : null;
+      if (lastStudy) lastStudy.setHours(0, 0, 0, 0);
+
+      if (!lastStudy) {
+        userObj.currentStreak = 1;
+        userObj.lastStudyDate = new Date();
+      } else {
+        const diffTime = Math.abs(today - lastStudy);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          userObj.currentStreak += 1;
+          userObj.lastStudyDate = new Date();
+        } else if (diffDays > 1) {
+          userObj.currentStreak = 1;
+          userObj.lastStudyDate = new Date();
+        }
+      }
+      await userObj.save();
+    }
 
     res.status(200).json({
       success: true,

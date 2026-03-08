@@ -24,6 +24,17 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    dailyGoalHours: {
+      type: Number,
+      default: 0,
+    },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+    lastStudyDate: {
+      type: Date,
+    },
   },
   {
     toJSON: {

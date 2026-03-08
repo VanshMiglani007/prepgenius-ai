@@ -2,6 +2,7 @@ const Analytics = require("../models/Analytics");
 const StudySession = require("../models/StudySession");
 const Topic = require("../models/Topic");
 const Subject = require("../models/Subject");
+const User = require("../models/User");
 
 // Get comprehensive dashboard stats
 const getDashboardStats = async (req, res) => {
@@ -87,6 +88,8 @@ const getDashboardStats = async (req, res) => {
             : Math.round((completedTopics / totalTopics) * 100),
         productivityScore,
         subjectProgress,
+        dailyGoalHours: req.user.dailyGoalHours || 5, // Default to 5 if not set
+        currentStreak: req.user.currentStreak || 0,
       },
     });
   } catch (error) {
@@ -105,7 +108,7 @@ const getDailyAnalytics = async (req, res) => {
     // Returns the last 7 days of analytics, sorted chronologically for graphs
     const records = await Analytics.find({ userId })
       .sort({ date: 1 })
-      .limit(7);
+      .limit(90);
 
     res.status(200).json({
       success: true,

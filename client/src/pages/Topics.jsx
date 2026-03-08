@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search, Edit2 } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const Topics = () => {
@@ -14,12 +13,16 @@ const Topics = () => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [topicToDelete, setTopicToDelete] = useState(null);
   
   const [formData, setFormData] = useState({ 
     name: '', 
     subjectId: initialSubject, 
     estimatedHours: 2, 
-    difficulty: 'medium' 
+    difficulty: 'medium',
+    priority: 'Medium'
   });
   
   const [filterSubject, setFilterSubject] = useState(initialSubject);
@@ -49,22 +52,51 @@ const Topics = () => {
     fetchData();
   }, [initialSubject]);
 
-  const handleCreateTopic = async (e) => {
+  const handleCreateOrUpdateTopic = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/topics', formData);
-      setIsModalOpen(false);
-      setFormData({ ...formData, name: '', difficulty: 'medium' });
+      if (editingId) {
+        await api.put(`/topics/${editingId}`, formData);
+      } else {
+        await api.post('/topics', formData);
+      }
+      closeModal();
       fetchData(); // refresh
     } catch (err) {
-      console.error("Failed to create topic:", err);
+      console.error("Failed to save topic:", err);
     }
   };
 
-  const handleDelete = async (id) => {
+  const openEditModal = (t) => {
+    setFormData({
+       name: t.name,
+       subjectId: t.subjectId._id || t.subjectId,
+       estimatedHours: t.estimatedHours,
+       difficulty: t.difficulty,
+       priority: t.priority || 'Medium'
+    });
+    setEditingId(t._id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setFormData({ name: '', subjectId: subjects.length > 0 ? subjects[0]._id : '', estimatedHours: 2, difficulty: 'medium', priority: 'Medium' });
+  };
+
+  const confirmDelete = (id) => {
+    setTopicToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!topicToDelete) return;
     try {
-      await api.delete(`/topics/${id}`);
-      setTopics(topics.filter(t => t._id !== id));
+      await api.delete(`/topics/${topicToDelete}`);
+      setTopics(topics.filter(t => t._id !== topicToDelete));
+      setIsDeleteModalOpen(false);
+      setTopicToDelete(null);
     } catch (err) {
       console.error("Failed to delete topic:", err);
     }
@@ -103,9 +135,7 @@ const Topics = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-white">
-      <Navbar />
-
-      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative">
+      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative pt-24">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-5">
           <div>
             <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
@@ -178,23 +208,41 @@ const Topics = () => {
                             >
                               {topic.completionStatus === 'completed' ? <CheckCircle size={24} /> : <Circle size={24} />}
                             </button>
-                            <div>
-                               <h4 className={`font-semibold text-lg ${topic.completionStatus === 'completed' ? 'line-through text-white/50' : ''}`}>
-                                 {topic.name}
-                               </h4>
-                               <div className="flex gap-3 text-xs mt-1">
+                            <div className="flex-1 w-full min-w-0">
+                               <div className="flex items-center gap-2">
+                                 <h4 className={`font-semibold text-lg truncate ${topic.completionStatus === 'completed' ? 'line-through text-white/50' : ''}`}>
+                                   {topic.name}
+                                 </h4>
+                                 {topic.priority === 'High' && <span className="text-[9px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded-sm uppercase tracking-wider font-bold whitespace-nowrap">High Priority</span>}
+                               </div>
+                               <div className="flex gap-3 text-xs mt-1 mb-2">
                                   <span className="text-white/40 flex items-center gap-1"><Search size={12}/> {topic.estimatedHours} hrs est.</span>
                                   <span className={`
-                                    ${topic.difficulty === 'High' ? 'text-red-400' : 
-                                      topic.difficulty === 'Medium' ? 'text-yellow-400' : 
-                                      'text-green-400'} font-medium
+                                    ${topic.difficulty === 'hard' ? 'text-red-400' : 
+                                      topic.difficulty === 'medium' ? 'text-yellow-400' : 
+                                      'text-green-400'} font-medium uppercase
                                   `}>{topic.difficulty}</span>
                                </div>
+                               {/* Progress Bar */}
+                               <div className="w-full h-1.5 bg-dark-bg rounded-full overflow-hidden mt-1">
+                                  <div 
+                                    className="h-full bg-primary transition-all duration-1000" 
+                                    style={{ width: `${Math.min(100, ((topic.completedHours || 0) / topic.estimatedHours) * 100)}%` }}
+                                  ></div>
+                               </div>
+                               <p className="text-[10px] text-white/30 mt-1 uppercase tracking-widest font-mono">
+                                 {Math.round((topic.completedHours || 0)*10)/10} / {topic.estimatedHours} hrs
+                               </p>
                             </div>
                          </div>
-                         <button onClick={() => handleDelete(topic._id)} className="p-2 text-white/50 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Trash2 size={18} />
-                         </button>
+                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => openEditModal(topic)} className="p-2 text-white/50 hover:text-white transition-colors">
+                               <Edit2 size={18} />
+                            </button>
+                            <button onClick={() => confirmDelete(topic._id)} className="p-2 text-white/50 hover:text-red-400 transition-colors">
+                               <Trash2 size={18} />
+                            </button>
+                         </div>
                        </motion.div>
                      ))}
                    </AnimatePresence>
@@ -216,14 +264,14 @@ const Topics = () => {
           >
             <div className="h-2 w-full bg-gradient-to-r from-primary to-indigo-500"></div>
             <div className="p-8">
-              <h2 className="text-2xl font-bold mb-6 text-white">Add New Topic</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">{editingId ? 'Edit Topic' : 'Add New Topic'}</h2>
               {subjects.length === 0 ? (
                 <div className="text-center py-6">
                    <p className="text-red-400 mb-4">You need to create a Subject first.</p>
                    <button onClick={() => navigate('/subjects')} className="btn-outline inline-flex w-full justify-center">Go to Subjects</button>
                 </div>
               ) : (
-                <form onSubmit={handleCreateTopic} className="space-y-5">
+                <form onSubmit={handleCreateOrUpdateTopic} className="space-y-5">
                   <div>
                     <label className="block text-xs uppercase tracking-wider text-white/60 mb-2">Topic Name</label>
                     <input 
@@ -244,6 +292,18 @@ const Topics = () => {
                       className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer"
                     >
                       {subjects.map(s => <option className="bg-white text-black" key={s._id} value={s._id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase tracking-wider text-white/60 mb-2">Priority Level</label>
+                    <select 
+                      value={formData.priority}
+                      onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                      className="w-full bg-[#20203a] border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-primary transition-colors hover:cursor-pointer mb-5"
+                    >
+                      <option className="bg-white text-black" value="Low">Low Priority</option>
+                      <option className="bg-white text-black" value="Medium">Medium Priority</option>
+                      <option className="bg-white text-black" value="High">High Priority</option>
                     </select>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -272,16 +332,42 @@ const Topics = () => {
                   </div>
                   
                   <div className="flex gap-4 mt-8 pt-4">
-                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
+                    <button type="button" onClick={closeModal} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
                       Cancel
                     </button>
                     <button type="submit" className="flex-1 py-3 px-4 rounded-xl bg-primary text-dark-bg font-bold hover:shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all">
-                      Save Topic
+                      {editingId ? 'Update Topic' : 'Save Topic'}
                     </button>
                   </div>
                 </form>
               )}
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#1a1a2e] border border-red-500/30 shadow-[0_0_25px_rgba(239,68,68,0.1)] rounded-2xl w-full max-w-sm overflow-hidden text-center p-8 relative"
+          >
+             <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 text-red-500">
+               <Trash2 size={32} />
+             </div>
+             <h2 className="text-2xl font-bold mb-2 text-white">Delete Topic?</h2>
+             <p className="text-white/60 mb-8 text-sm">This action cannot be undone and will erase all Pomodoro tracking progress.</p>
+             
+             <div className="flex gap-4">
+                <button type="button" onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
+                  Cancel
+                </button>
+                <button type="button" onClick={handleDelete} className="flex-1 py-3 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+                  Delete
+                </button>
+             </div>
           </motion.div>
         </div>
       )}

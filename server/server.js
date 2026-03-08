@@ -8,7 +8,12 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Serve static files from client
@@ -25,6 +30,7 @@ const studyPlanRoutes = require("./routes/studyPlanRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const studySessionRoutes = require("./routes/studySessionRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
@@ -33,6 +39,7 @@ app.use("/api/study-plan", studyPlanRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sessions", studySessionRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/assistant", aiRoutes);
 
 // SPA fallback - serve index.html for client routes (Express 5 uses /{*path} for catch-all)
 app.get("/{*path}", (req, res) => {

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
+import MascotCharacters from '../components/MascotCharacters';
+import CustomCursor from '../components/CustomCursor';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +12,9 @@ const Auth = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login, register } = useAuth();
+  const [isFocused, setIsFocused] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [mascotPosition, setMascotPosition] = useState('right');
 
   // Form states
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -17,6 +22,15 @@ const Auth = () => {
 
   const handleToggle = (e) => {
     e.preventDefault();
+    if (isLogin) {
+        // Switching to Signup: Right -> Top -> Left
+        setMascotPosition('top');
+        setTimeout(() => setMascotPosition('left'), 750);
+    } else {
+        // Switching to Login: Left -> Top -> Right
+        setMascotPosition('top');
+        setTimeout(() => setMascotPosition('right'), 750);
+    }
     setIsLogin(!isLogin);
     setError('');
   };
@@ -28,7 +42,8 @@ const Auth = () => {
 
     try {
       await login(loginForm.email, loginForm.password);
-      navigate('/dashboard');
+      setIsSuccess(true);
+      setTimeout(() => navigate('/dashboard'), 1000);
     } catch (err) {
       setError(err.message || 'Login failed. Check your credentials.');
     } finally {
@@ -43,7 +58,8 @@ const Auth = () => {
 
     try {
       await register(signupForm.name, signupForm.email, signupForm.password);
-      navigate('/dashboard');
+      setIsSuccess(true);
+      setTimeout(() => navigate('/dashboard'), 1000);
     } catch (err) {
       setError(err.message || 'Registration failed.');
     } finally {
@@ -54,7 +70,15 @@ const Auth = () => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-5 bg-dark-bg text-white font-sans overflow-hidden">
       
-      <div className={`auth-wrapper ${!isLogin ? 'toggled' : ''}`}>
+      <div className="relative w-full max-w-[800px]">
+        {/* Playful Interactive Mascot - NOW OUTSIDE auth-wrapper */}
+        <MascotCharacters 
+            isFocused={isFocused} 
+            isSuccess={isSuccess} 
+            positionState={mascotPosition} 
+        />
+
+        <div className={`auth-wrapper ${!isLogin ? 'toggled' : ''}`}>
         <div className="background-shape"></div>
         <div className="secondary-shape"></div>
         
@@ -68,6 +92,8 @@ const Auth = () => {
                 required 
                 value={loginForm.email}
                 onChange={e => setLoginForm({...loginForm, email: e.target.value})}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <label>Email</label>
               <Mail className="absolute right-0 top-1/2 -translate-y-1/2 text-white transition-colors peer-focus:text-primary" size={18} />
@@ -79,6 +105,8 @@ const Auth = () => {
                 required 
                 value={loginForm.password}
                 onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <label>Password</label>
               <Lock className="absolute right-0 top-1/2 -translate-y-1/2 text-white transition-colors peer-focus:text-primary" size={18} />
@@ -114,6 +142,8 @@ const Auth = () => {
                 required 
                 value={signupForm.name}
                 onChange={e => setSignupForm({...signupForm, name: e.target.value})}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <label>Name</label>
               <UserIcon className="absolute right-0 top-1/2 -translate-y-1/2 text-white transition-colors peer-focus:text-primary" size={18} />
@@ -125,6 +155,8 @@ const Auth = () => {
                 required 
                 value={signupForm.email}
                 onChange={e => setSignupForm({...signupForm, email: e.target.value})}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <label>Email</label>
               <Mail className="absolute right-0 top-1/2 -translate-y-1/2 text-white transition-colors peer-focus:text-primary" size={18} />
@@ -137,6 +169,8 @@ const Auth = () => {
                 minLength="6"
                 value={signupForm.password}
                 onChange={e => setSignupForm({...signupForm, password: e.target.value})}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
               <label>Password</label>
               <Lock className="absolute right-0 top-1/2 -translate-y-1/2 text-white transition-colors peer-focus:text-primary" size={18} />
@@ -162,10 +196,7 @@ const Auth = () => {
           <h2 className="slide-element">WELCOME!</h2>
         </div>
       </div>
-
-      <div className="mt-8 text-center text-sm text-white/80">
-        <p>PrepGenius AI — Intelligent Exam Preparation</p>
-      </div>
+    </div>
 
     </div>
   );

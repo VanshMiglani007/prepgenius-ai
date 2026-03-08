@@ -1,0 +1,165 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Instagram, Github, Linkedin, Heart, Mail, X, CheckSquare, Shield, Zap, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const Footer = () => {
+  const navigate = useNavigate();
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
+  return (
+    <footer className="w-full bg-dark-bg/80 backdrop-blur-md border-t border-white/5 py-12 px-6 md:px-20 mt-auto relative z-40">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+        
+        {/* Brand Section */}
+        <div className="flex flex-col gap-4 max-w-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+              <Brain size={20} />
+            </div>
+            <span className="text-lg font-bold tracking-wide text-white">PrepGenius AI</span>
+          </div>
+          <p className="text-white/50 text-sm leading-relaxed">
+            The intelligent study platform designed for university students. 
+            Leveraging neural networks to organize, schedule, and optimize your exam preparation.
+          </p>
+          <div className="flex items-center gap-4 mt-2">
+            <SocialIcon href="https://www.instagram.com/vansh__miglani__007_/" icon={<Instagram size={18} />} />
+            <SocialIcon href="https://github.com/VanshMiglani007" icon={<Github size={18} />} />
+            <SocialIcon href="https://www.linkedin.com/in/vansh-miglani-82123a334/" icon={<Linkedin size={18} />} />
+            <SocialIcon href="mailto:vanshmiglani29107@gmail.com" icon={<Mail size={18} />} />
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="flex flex-col sm:flex-row gap-6 md:gap-12 items-center md:items-start text-sm font-medium">
+          <button 
+            onClick={() => setIsFeaturesOpen(true)}
+            className="text-white/60 hover:text-primary transition-colors"
+          >
+            Features
+          </button>
+          <button 
+            onClick={() => navigate('/assistant')}
+            className="text-white/60 hover:text-primary transition-colors"
+          >
+            Help Center
+          </button>
+          <button 
+            onClick={() => setIsTermsOpen(true)}
+            className="text-white/60 hover:text-primary transition-colors"
+          >
+            Terms & Conditions
+          </button>
+        </div>
+
+      </div>
+
+      {/* Divider */}
+      <div className="w-full h-px bg-white/5 my-8 max-w-7xl mx-auto"></div>
+
+      {/* Copyright & Developed By */}
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
+        <p>© {new Date().getFullYear()} PrepGenius AI. All rights reserved.</p>
+        <p className="flex items-center gap-1.5">
+          Developed with <Heart size={12} className="text-red-500 fill-red-500/20" /> by 
+          <span className="text-primary font-semibold hover:text-white transition-colors cursor-pointer">Vansh</span>
+        </p>
+      </div>
+    </footer>
+  );
+};
+
+      {/* Terms & Conditions Modal */}
+      <AnimatePresence>
+        {isTermsOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.95, y: 10 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 10 }}
+               className="bg-[#1a1a2e] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl relative"
+             >
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+                   <h2 className="text-xl font-bold flex items-center gap-2"><Shield className="text-primary" size={20} /> Terms & Conditions</h2>
+                   <button onClick={() => setIsTermsOpen(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"><X size={18} /></button>
+                </div>
+                <div className="p-8 overflow-y-auto flex-1 space-y-6 text-sm text-white/70">
+                   <div>
+                     <h3 className="text-white font-bold mb-2 text-base">1. Acceptance of Terms</h3>
+                     <p>By accessing PrepGenius AI, you agree to be bound by these Terms and Conditions. These terms apply to all visitors, users, and others who access the Service.</p>
+                   </div>
+                   <div>
+                     <h3 className="text-white font-bold mb-2 text-base">2. Study Data & AI Generation</h3>
+                     <p>Any study plans and analytics generated by PrepGenius AI are for organizational purposes only. We do not guarantee academic performance or pass rates for any examination.</p>
+                   </div>
+                   <div>
+                     <h3 className="text-white font-bold mb-2 text-base">3. Data Privacy</h3>
+                     <p>We implement professional-grade security measures to maintain the safety of your personal information. Your subjects, topics, and study patterns are encrypted and never sold to third parties.</p>
+                   </div>
+                   <div>
+                     <h3 className="text-white font-bold mb-2 text-base">4. Acceptable Use</h3>
+                     <p>Users must not use the AI Assistant to generate plagiarized academic content, disrupt the server infrastructure, or attempt unauthorized access to the application endpoints.</p>
+                   </div>
+                   <div>
+                     <h3 className="text-white font-bold mb-2 text-base">5. Liability Limitations</h3>
+                     <p>PrepGenius AI shall not be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+                   </div>
+                </div>
+                <div className="p-4 bg-black/20 border-t border-white/10 text-right">
+                   <button onClick={() => setIsTermsOpen(false)} className="px-6 py-2 bg-primary text-dark-bg font-bold rounded-xl shadow-[0_0_15px_rgba(0,212,255,0.3)] hover:scale-105 transition-transform">Acknowledge</button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Features Matrix Modal */}
+      <AnimatePresence>
+        {isFeaturesOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.95, y: 10 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 10 }}
+               className="bg-[#1a1a2e] border border-white/10 rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl relative"
+             >
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+                   <h2 className="text-xl font-bold flex items-center gap-2"><Zap className="text-primary" size={20} /> Platform Features</h2>
+                   <button onClick={() => setIsFeaturesOpen(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"><X size={18} /></button>
+                </div>
+                <div className="p-8 overflow-y-auto flex-1 bg-[#151525]">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {[
+                        { title: 'AI Study Planning', desc: 'Auto-generate optimized schedules based on topic difficulty and exam deadlines.', icon: <Brain size={24}/> },
+                        { title: 'Pomodoro Focus Timer', desc: 'Integrated timer linking directly to your tasks to ensure maximum memory retention.', icon: <Target size={24}/> },
+                        { title: 'Predictive Analytics', desc: 'Visualize your daily productivity, learning velocity, and overall course progress.', icon: <CheckSquare size={24}/> },
+                        { title: 'Conversational Assistant', desc: 'Context-aware AI chat to help structure subjects and answer complex queries.', icon: <Mail size={24}/> }
+                      ].map((feat, idx) => (
+                         <div key={idx} className="bg-white/5 border border-white/10 p-5 rounded-xl hover:border-primary/50 transition-colors">
+                            <div className="w-12 h-12 bg-primary/20 text-primary flex items-center justify-center rounded-lg mb-4">
+                               {feat.icon}
+                            </div>
+                            <h3 className="text-lg font-bold mb-2">{feat.title}</h3>
+                            <p className="text-sm text-white/50">{feat.desc}</p>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+const SocialIcon = ({ icon, href }) => (
+  <a 
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:bg-primary/20 hover:text-primary hover:border-primary/50 transition-all duration-300 interactive"
+  >
+    {icon}
+  </a>
+);
+
+export default Footer;

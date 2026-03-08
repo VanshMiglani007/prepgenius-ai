@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +10,10 @@ const Subjects = () => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', examDate: '', difficulty: 'Medium', color: '#00d4ff' });
+  const [editingId, setEditingId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [subjectToDelete, setSubjectToDelete] = useState(null);
+  const [formData, setFormData] = useState({ name: '', examDate: '', difficulty: 'medium', color: '#00d4ff' });
 
   const fetchSubjects = async () => {
     try {
@@ -30,22 +32,50 @@ const Subjects = () => {
     fetchSubjects();
   }, []);
 
-  const handleCreateSubject = async (e) => {
+  const handleCreateOrUpdateSubject = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/subjects', formData);
-      setIsModalOpen(false);
-      setFormData({ name: '', examDate: '', difficulty: 'medium', color: '#00d4ff' });
-      fetchSubjects(); // refresh
+      if (editingId) {
+        await api.put(`/subjects/${editingId}`, formData);
+      } else {
+        await api.post('/subjects', formData);
+      }
+      closeModal();
+      fetchSubjects();
     } catch (err) {
-      console.error("Failed to create subject:", err);
+      console.error("Failed to save subject:", err);
     }
   };
 
-  const handleDelete = async (id) => {
+  const openEditModal = (sub) => {
+    setFormData({
+       name: sub.name,
+       examDate: sub.examDate ? new Date(sub.examDate).toISOString().split('T')[0] : '',
+       difficulty: sub.difficulty,
+       color: sub.color
+    });
+    setEditingId(sub._id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setFormData({ name: '', examDate: '', difficulty: 'medium', color: '#00d4ff' });
+  };
+
+  const confirmDelete = (id) => {
+    setSubjectToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!subjectToDelete) return;
     try {
-      await api.delete(`/subjects/${id}`);
-      setSubjects(subjects.filter(sub => sub._id !== id));
+      await api.delete(`/subjects/${subjectToDelete}`);
+      setSubjects(subjects.filter(sub => sub._id !== subjectToDelete));
+      setIsDeleteModalOpen(false);
+      setSubjectToDelete(null);
     } catch (err) {
       console.error("Failed to delete subject:", err);
     }
@@ -53,9 +83,7 @@ const Subjects = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-white">
-      <Navbar />
-
-      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative">
+      <main className="flex-1 p-10 max-w-7xl mx-auto w-full relative pt-24">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
@@ -101,7 +129,10 @@ const Subjects = () => {
                   style={{ borderLeftColor: sub.color || '#00d4ff' }}
                 >
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                    <button onClick={() => handleDelete(sub._id)} className="p-2 text-white/50 hover:text-red-400 bg-dark-bg rounded-lg transition-colors">
+                    <button onClick={() => openEditModal(sub)} className="p-2 text-white/50 hover:text-white bg-dark-bg rounded-lg transition-colors">
+                      <Edit2 size={16} />
+                    </button>
+                    <button onClick={() => confirmDelete(sub._id)} className="p-2 text-white/50 hover:text-red-400 bg-dark-bg rounded-lg transition-colors">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -145,8 +176,8 @@ const Subjects = () => {
           >
             <div className="h-2 w-full bg-gradient-to-r from-primary to-indigo-500"></div>
             <div className="p-8">
-              <h2 className="text-2xl font-bold mb-6 text-white">Add New Subject</h2>
-              <form onSubmit={handleCreateSubject} className="space-y-5">
+              <h2 className="text-2xl font-bold mb-6 text-white">{editingId ? 'Edit Subject' : 'Add New Subject'}</h2>
+              <form onSubmit={handleCreateOrUpdateSubject} className="space-y-5">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-white/60 mb-2">Subject Name</label>
                   <input 
@@ -192,15 +223,41 @@ const Subjects = () => {
                 </div>
                 
                 <div className="flex gap-4 mt-8 pt-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
+                  <button type="button" onClick={closeModal} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
                     Cancel
                   </button>
                   <button type="submit" className="flex-1 py-3 px-4 rounded-xl bg-primary text-dark-bg font-bold hover:shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all">
-                    Save Subject
+                    {editingId ? 'Update Subject' : 'Save Subject'}
                   </button>
                 </div>
               </form>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#1a1a2e] border border-red-500/30 shadow-[0_0_25px_rgba(239,68,68,0.1)] rounded-2xl w-full max-w-sm overflow-hidden text-center p-8 relative"
+          >
+             <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 text-red-500">
+               <Trash2 size={32} />
+             </div>
+             <h2 className="text-2xl font-bold mb-2 text-white">Delete Subject?</h2>
+             <p className="text-white/60 mb-8 text-sm">This action cannot be undone. All topic progress tied to this subject will be permanently lost.</p>
+             
+             <div className="flex gap-4">
+                <button type="button" onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-white/20 hover:bg-white/5 transition-colors font-medium">
+                  Cancel
+                </button>
+                <button type="button" onClick={handleDelete} className="flex-1 py-3 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+                  Delete
+                </button>
+             </div>
           </motion.div>
         </div>
       )}

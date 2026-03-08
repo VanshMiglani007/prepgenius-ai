@@ -1,14 +1,25 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import Toaster from './components/Toaster';
 import Dashboard from './pages/Dashboard';
 import Auth from './pages/Auth';
-import Landing from './pages/Landing'; // Newly created landing demo
-import Subjects from './pages/Subjects'; // New Subjects View
-import Topics from './pages/Topics'; // New Topics View
-import StudyPlan from './pages/StudyPlan'; // New StudyPlan View
-import Analytics from './pages/Analytics'; // New Analytics View
-import FocusTimer from './pages/FocusTimer'; // Pomodoro Focus Timer
+import Landing from './pages/Landing';
+import Subjects from './pages/Subjects';
+import Topics from './pages/Topics';
+import StudyPlan from './pages/StudyPlan';
+import Analytics from './pages/Analytics';
+import FocusTimer from './pages/FocusTimer';
+import AIAssistant from './pages/AIAssistant';
+import AdvancedCursor from './components/AdvancedCursor';
+import PageTransition from './components/PageTransition';
+import { AnimatePresence } from 'framer-motion';
+import AIBackground from './components/AIBackground';
+import AuthRoute from './components/AuthRoute';
+import { ThemeProvider } from './context/ThemeContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, error: null };
@@ -25,27 +36,45 @@ class ErrorBoundary extends Component {
   }
 }
 
+function AppContent() {
+  const location = useLocation();
+  return (
+    <div className="min-h-screen bg-dark-bg text-white relative flex flex-col pt-20"> {/* pt-20 to offset fixed Header */}
+      <AIBackground />
+      <AdvancedCursor />
+      <Header />
+      <main className="flex-1 w-full flex flex-col relative">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><Auth /></PageTransition>} />
+            <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+            <Route path="/subjects" element={<PageTransition><Subjects /></PageTransition>} />
+            <Route path="/topics" element={<PageTransition><Topics /></PageTransition>} />
+            <Route path="/study-plan" element={<PageTransition><StudyPlan /></PageTransition>} />
+            <Route path="/timer" element={<PageTransition><FocusTimer /></PageTransition>} />
+            <Route path="/analytics" element={<PageTransition><Analytics /></PageTransition>} />
+            <Route path="/assistant" element={<PageTransition><AIAssistant /></PageTransition>} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+      <Footer />
+      <Toaster />
+    </div>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-dark-bg">        
-            <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Auth />} />
-            
-            <Route path="/dashboard" element={<Dashboard />} />
-            
-            <Route path="/subjects" element={<Subjects />} />
-            <Route path="/topics" element={<Topics />} />
-            <Route path="/study-plan" element={<StudyPlan />} />
-            <Route path="/timer" element={<FocusTimer />} />
-            <Route path="/analytics" element={<Analytics />} />
-
-          </Routes>
-        </div>
-      </BrowserRouter>
+        <ThemeProvider>
+          <NotificationProvider>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </NotificationProvider>
+        </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
