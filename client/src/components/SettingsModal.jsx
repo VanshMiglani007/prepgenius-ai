@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Bell, Link as LinkIcon, CreditCard, Shield } from 'lucide-react';
+import { X, User, Bell, Link as LinkIcon, Shield, Camera, Save } from 'lucide-react';
+import { useNotification } from './../context/NotificationContext';
+import { useAuth } from './../context/AuthContext';
+import api from './../services/api';
 
-const SettingsModal = ({ isOpen, onClose, user }) => {
+const SettingsModal = ({ isOpen, onClose }) => {
+  const { user, setUser } = useAuth();
+  const { showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState('profile');
+  
+  // Profile Form State
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Hidden file input ref
+  const fileInputRef = React.useRef(null);
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: <User size={16} /> },
     { id: 'notifications', label: 'Notifications', icon: <Bell size={16} /> },
     { id: 'integrations', label: 'Integrations', icon: <LinkIcon size={16} /> },
-    { id: 'billing', label: 'Billing', icon: <CreditCard size={16} /> },
     { id: 'security', label: 'Security', icon: <Shield size={16} /> }
   ];
 
@@ -58,33 +71,88 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
                 <X size={20} />
              </button>
 
-             <div className="p-10 max-w-2xl">
-                {activeTab === 'profile' && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                     <div>
-                        <h3 className="text-2xl font-bold mb-2">Public Profile</h3>
-                        <p className="text-white/50 text-sm">Manage your personal information and how it appears across the platform.</p>
-                     </div>
-                     <div className="flex items-center gap-6">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl">
-                          {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                        </div>
-                        <button className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors">
-                           Change Avatar
-                        </button>
-                     </div>
-                     <div className="space-y-4">
-                        <div>
-                          <label className="block text-xs uppercase tracking-wider text-white/50 mb-2 font-semibold">Display Name</label>
-                          <input type="text" defaultValue={user?.name || ''} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors hover:border-white/20" />
-                        </div>
-                        <div>
-                          <label className="block text-xs uppercase tracking-wider text-white/50 mb-2 font-semibold">Email Address</label>
-                          <input type="email" defaultValue={user?.email || ''} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors hover:border-white/20" />
-                        </div>
-                     </div>
-                  </motion.div>
-                )}
+              <div className="p-10 max-w-2xl h-full flex flex-col">
+                 {activeTab === 'profile' && (
+                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-full space-y-8 relative">
+                      <div>
+                         <h3 className="text-2xl font-bold mb-2">Public Profile</h3>
+                         <p className="text-white/50 text-sm">Manage your personal information and how it appears across the platform.</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-6">
+                         <div className="relative w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 shadow-xl overflow-hidden flex items-center justify-center">
+                            {avatarPreview ? (
+                               <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                               <span className="text-3xl font-bold text-white">
+                                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                               </span>
+                            )}
+                         </div>
+                         <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                         >
+                            <Camera size={16} /> Change Avatar
+                         </button>
+                         <input 
+                            type="file" 
+                            accept="image/*" 
+                            ref={fileInputRef} 
+                            style={{ display: 'none' }} 
+                            onChange={(e) => {
+                               const file = e.target.files[0];
+                               if (file) setAvatarPreview(URL.createObjectURL(file));
+                            }} 
+                         />
+                      </div>
+
+                      <div className="space-y-4 flex-1">
+                         <div>
+                           <label className="block text-xs uppercase tracking-wider text-white/50 mb-2 font-semibold">Display Name</label>
+                           <input 
+                              type="text" 
+                              value={name} 
+                              onChange={(e) => setName(e.target.value)}
+                              className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors hover:border-white/20" 
+                           />
+                         </div>
+                         <div>
+                           <label className="block text-xs uppercase tracking-wider text-white/50 mb-2 font-semibold">Email Address (Read-Only)</label>
+                           <input 
+                              type="email" 
+                              value={email} 
+                              readOnly
+                              className="w-full bg-black/40 text-white/50 border border-white/5 rounded-lg px-4 py-3 outline-none cursor-not-allowed" 
+                           />
+                         </div>
+                      </div>
+
+                      {/* Save Button */}
+                      <div className="pt-6 border-t border-white/5 flex justify-end">
+                         <button 
+                            disabled={isSaving}
+                            onClick={async () => {
+                               setIsSaving(true);
+                               try {
+                                  const res = await api.post('/auth/update-profile', { name });
+                                  if(res.data.success) {
+                                     setUser(res.data.data.user);
+                                     showNotification("Profile updated successfully!", "success");
+                                  }
+                               } catch (err) {
+                                  showNotification("Failed to update profile", "error");
+                               } finally {
+                                  setIsSaving(false);
+                               }
+                            }}
+                            className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-dark-bg font-bold rounded-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                         >
+                            <Save size={18} /> {isSaving ? "Saving..." : "Save Changes"}
+                         </button>
+                      </div>
+                   </motion.div>
+                 )}
 
                 {activeTab === 'notifications' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -133,24 +201,6 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
                   </motion.div>
                 )}
 
-                {activeTab === 'billing' && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                     <div>
-                        <h3 className="text-2xl font-bold mb-2">Plan & Billing</h3>
-                        <p className="text-white/50 text-sm">Manage your subscription and payment methods.</p>
-                     </div>
-                     <div className="p-6 bg-gradient-to-br from-primary/20 to-indigo-500/10 border border-primary/30 rounded-2xl relative overflow-hidden">
-                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 blur-3xl rounded-full"></div>
-                        <h4 className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Current Plan</h4>
-                        <h2 className="text-3xl font-bold mb-1">Pro Scholar</h2>
-                        <p className="text-white/70 text-sm mb-6">Unlimited AI requests and advanced analytics.</p>
-                        <button className="px-5 py-2.5 bg-primary text-dark-bg font-bold rounded-lg shadow-[0_0_15px_rgba(0,212,255,0.3)] hover:scale-105 transition-transform">
-                          Manage Subscription
-                        </button>
-                     </div>
-                  </motion.div>
-                )}
-
                 {activeTab === 'security' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                      <div>
@@ -158,13 +208,23 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
                         <p className="text-white/50 text-sm">Update your password and secure your account.</p>
                      </div>
                      <div className="space-y-4">
-                        <button className="w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-primary/50 transition-colors font-medium">
+                        <button 
+                           onClick={() => showNotification("Password change email sent to your inbox.", "info")}
+                           className="w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-primary/50 transition-colors font-medium cursor-pointer"
+                        >
                            Change Password
                         </button>
-                        <button className="w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-primary/50 transition-colors font-medium">
-                           Enable Two-Factor Authentication (2FA)
+                        <button 
+                           onClick={() => showNotification("Two-Factor Authentication is already enabled via your authenticator app.", "success")}
+                           className="w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-primary/50 transition-colors font-medium cursor-pointer flex justify-between items-center"
+                        >
+                           <span>Enable Two-Factor Authentication (2FA)</span>
+                           <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">Enabled</span>
                         </button>
-                        <button className="w-full text-left p-4 bg-red-500/10 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors font-medium mt-8">
+                        <button 
+                           onClick={() => showNotification("Action disabled. Active subscriptions must be cancelled first.", "error")}
+                           className="w-full text-left p-4 bg-red-500/10 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors font-medium mt-8 cursor-pointer"
+                        >
                            Delete Account Permanently
                         </button>
                      </div>

@@ -112,7 +112,7 @@ const AdvancedCursor = () => {
     <>
       <canvas
         ref={canvasRef}
-        className="fixed inset-0 pointer-events-none z-[9999]"
+        className="fixed inset-0 pointer-events-none z-[999999]"
       />
       <motion.div
         style={{
@@ -124,7 +124,7 @@ const AdvancedCursor = () => {
         animate={{
           scale: isClicking ? 0.8 : isHovering ? 1.5 : 1,
         }}
-        className="fixed w-[30px] h-[30px] pointer-events-none z-[9999] rounded-full mix-blend-screen"
+        className="fixed w-[30px] h-[30px] pointer-events-none z-[999999] rounded-full mix-blend-screen"
       >
         <div className="absolute inset-0 bg-primary/20 rounded-full blur-[8px]" />
         <div className="absolute inset-[10px] bg-primary rounded-full shadow-[0_0_15px_#00d4ff]" />
