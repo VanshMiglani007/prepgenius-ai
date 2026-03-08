@@ -48,13 +48,13 @@ function AppContent() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
             <Route path="/login" element={<PageTransition><Auth /></PageTransition>} />
-            <Route path="/dashboard" element={<AuthRoute><PageTransition><Dashboard /></PageTransition></AuthRoute>} />
-            <Route path="/subjects" element={<AuthRoute><PageTransition><Subjects /></PageTransition></AuthRoute>} />
-            <Route path="/topics" element={<AuthRoute><PageTransition><Topics /></PageTransition></AuthRoute>} />
-            <Route path="/study-plan" element={<AuthRoute><PageTransition><StudyPlan /></PageTransition></AuthRoute>} />
-            <Route path="/timer" element={<AuthRoute><PageTransition><FocusTimer /></PageTransition></AuthRoute>} />
-            <Route path="/analytics" element={<AuthRoute><PageTransition><Analytics /></PageTransition></AuthRoute>} />
-            <Route path="/assistant" element={<AuthRoute><PageTransition><AIAssistant /></PageTransition></AuthRoute>} />
+            <Route path="/dashboard" element={<PageTransition><AuthRoute><Dashboard /></AuthRoute></PageTransition>} />
+            <Route path="/subjects" element={<PageTransition><AuthRoute><Subjects /></AuthRoute></PageTransition>} />
+            <Route path="/topics" element={<PageTransition><AuthRoute><Topics /></AuthRoute></PageTransition>} />
+            <Route path="/study-plan" element={<PageTransition><AuthRoute><StudyPlan /></AuthRoute></PageTransition>} />
+            <Route path="/timer" element={<PageTransition><AuthRoute><FocusTimer /></AuthRoute></PageTransition>} />
+            <Route path="/analytics" element={<PageTransition><AuthRoute><Analytics /></AuthRoute></PageTransition>} />
+            <Route path="/assistant" element={<PageTransition><AuthRoute><AIAssistant /></AuthRoute></PageTransition>} />
           </Routes>
         </AnimatePresence>
       </main>

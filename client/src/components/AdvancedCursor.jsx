@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 
 const AdvancedCursor = () => {
   const canvasRef = useRef(null);
@@ -8,10 +8,9 @@ const AdvancedCursor = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
 
-  // Tighter springs for a faster, less laggy cursor
-  const springConfig = { stiffness: 800, damping: 35 };
-  const cursorX = useSpring(-100, springConfig);
-  const cursorY = useSpring(-100, springConfig);
+  // Use raw motion values instead of springs to completely eliminate trailing lag
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
 
   useEffect(() => {
     const canvas = canvasRef.current;

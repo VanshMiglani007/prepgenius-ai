@@ -10,9 +10,10 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { cycleTheme } = useTheme();
+  const { theme, setTheme, themes } = useTheme();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleLogout = () => {
@@ -46,8 +47,51 @@ const Header = () => {
         )}
         <NavIconButton icon={<Home size={18} />} label="Home" onClick={() => navigate('/dashboard')} />
         <NavIconButton icon={<Settings size={18} />} label="Settings" onClick={() => setIsSettingsOpen(true)} />
-        <NavIconButton icon={<Palette size={18} />} label="Theme" onClick={cycleTheme} />
         
+        {/* Theme Dropdown */}
+        <div className="relative">
+          <NavIconButton 
+             icon={<Palette size={18} />} 
+             label="Theme" 
+             onClick={() => {
+                setIsThemeDropdownOpen(!isThemeDropdownOpen);
+                if (isDropdownOpen) setIsDropdownOpen(false);
+             }} 
+          />
+          <AnimatePresence>
+            {isThemeDropdownOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-3 w-48 bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden py-2"
+              >
+                 <div className="flex flex-col gap-1 px-2">
+                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest px-3 pb-1 pt-1">Select Theme</p>
+                    {themes.map(t => (
+                       <button 
+                         key={t.id}
+                         onClick={() => {
+                            setTheme(t.id);
+                            setIsThemeDropdownOpen(false);
+                         }}
+                         className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-xl transition-colors text-left ${
+                            theme === t.id 
+                            ? 'bg-primary/20 text-primary border border-primary/30' 
+                            : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+                         }`}
+                       >
+                         {t.name}
+                         {theme === t.id && <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>}
+                       </button>
+                    ))}
+                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <div className="w-[1px] h-8 bg-white/10 mx-2"></div>
 
         {!user ? (
@@ -59,9 +103,12 @@ const Header = () => {
                 <span>Sign In</span>
             </button>
         ) : (
-             <div className="relative">
+              <div className="relative">
                 <button 
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => {
+                     setIsDropdownOpen(!isDropdownOpen);
+                     if (isThemeDropdownOpen) setIsThemeDropdownOpen(false);
+                  }}
                   className="flex items-center gap-3 px-2 py-1.5 pr-4 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors interactive"
                 >
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-md">

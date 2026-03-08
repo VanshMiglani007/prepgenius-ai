@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Bell, Link as LinkIcon, CreditCard, Shield } from 'lucide-react';
 
@@ -15,9 +16,9 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-dark-bg/80 backdrop-blur-md">
         <motion.div 
           initial={{ scale: 0.95, opacity: 0, y: 10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -174,7 +175,8 @@ const SettingsModal = ({ isOpen, onClose, user }) => {
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
