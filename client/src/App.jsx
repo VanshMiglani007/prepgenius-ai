@@ -19,6 +19,7 @@ import AIBackground from './components/AIBackground';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AuthRoute from './components/AuthRoute';
 
 class ErrorBoundary extends Component {
   state = { hasError: false, error: null };
@@ -47,13 +48,13 @@ function AppContent() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
             <Route path="/login" element={<PageTransition><Auth /></PageTransition>} />
-            <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-            <Route path="/subjects" element={<PageTransition><Subjects /></PageTransition>} />
-            <Route path="/topics" element={<PageTransition><Topics /></PageTransition>} />
-            <Route path="/study-plan" element={<PageTransition><StudyPlan /></PageTransition>} />
-            <Route path="/timer" element={<PageTransition><FocusTimer /></PageTransition>} />
-            <Route path="/analytics" element={<PageTransition><Analytics /></PageTransition>} />
-            <Route path="/assistant" element={<PageTransition><AIAssistant /></PageTransition>} />
+            <Route path="/dashboard" element={<AuthRoute><PageTransition><Dashboard /></PageTransition></AuthRoute>} />
+            <Route path="/subjects" element={<AuthRoute><PageTransition><Subjects /></PageTransition></AuthRoute>} />
+            <Route path="/topics" element={<AuthRoute><PageTransition><Topics /></PageTransition></AuthRoute>} />
+            <Route path="/study-plan" element={<AuthRoute><PageTransition><StudyPlan /></PageTransition></AuthRoute>} />
+            <Route path="/timer" element={<AuthRoute><PageTransition><FocusTimer /></PageTransition></AuthRoute>} />
+            <Route path="/analytics" element={<AuthRoute><PageTransition><Analytics /></PageTransition></AuthRoute>} />
+            <Route path="/assistant" element={<AuthRoute><PageTransition><AIAssistant /></PageTransition></AuthRoute>} />
           </Routes>
         </AnimatePresence>
       </main>

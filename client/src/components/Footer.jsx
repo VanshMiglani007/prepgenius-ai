@@ -8,46 +8,46 @@ const Footer = () => {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   return (
-    <footer className="w-full bg-dark-bg/80 backdrop-blur-md border-t border-white/5 py-8 px-6 md:px-20 mt-auto relative z-40">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer className="w-full bg-dark-bg/80 backdrop-blur-md border-t border-white/5 py-4 px-6 md:px-10 mt-auto relative z-40">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         
         {/* Brand Section */}
-        <div className="flex flex-col gap-4 max-w-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-              <Brain size={20} />
+        <div className="flex flex-col gap-2 max-w-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+              <Brain size={14} />
             </div>
-            <span className="text-lg font-bold tracking-wide text-white">PrepGenius AI</span>
+            <span className="text-sm font-bold tracking-wide text-white">PrepGenius AI</span>
           </div>
-          <p className="text-white/50 text-sm leading-relaxed">
-            The intelligent study platform designed for university students. 
-            Leveraging neural networks to organize, schedule, and optimize your exam preparation.
+          <p className="text-white/40 text-[11px] leading-tight">
+            Intelligent study platform leveraging neural networks to organize and optimize your exam preparation.
           </p>
-          <div className="flex items-center gap-4 mt-2">
-            <SocialIcon href="https://www.instagram.com/vansh__miglani__007_/" icon={<Instagram size={18} />} />
-            <SocialIcon href="https://github.com/VanshMiglani007" icon={<Github size={18} />} />
-            <SocialIcon href="https://www.linkedin.com/in/vansh-miglani-82123a334/" icon={<Linkedin size={18} />} />
-            <SocialIcon href="mailto:vanshmiglani29107@gmail.com" icon={<Mail size={18} />} />
+          <div className="flex items-center gap-3 mt-1">
+            <SocialIcon href="https://www.instagram.com/vansh__miglani__007_/" icon={<Instagram size={14} />} />
+            <SocialIcon href="https://github.com/VanshMiglani007" icon={<Github size={14} />} />
+            <SocialIcon href="https://www.linkedin.com/in/vansh-miglani-82123a334/" icon={<Linkedin size={14} />} />
+            <SocialIcon href="mailto:vanshmiglani29107@gmail.com" icon={<Mail size={14} />} />
           </div>
         </div>
 
         {/* Quick Links */}
-        <div className="flex flex-col sm:flex-row gap-6 md:gap-12 items-center md:items-start text-sm font-medium">
+        {/* Quick Links */}
+        <div className="flex flex-wrap gap-4 md:gap-8 justify-center text-xs font-medium">
           <button 
             onClick={() => setIsFeaturesOpen(true)}
-            className="text-white/60 hover:text-primary transition-colors"
+            className="text-white/50 hover:text-primary transition-colors"
           >
             Features
           </button>
           <button 
             onClick={() => navigate('/assistant')}
-            className="text-white/60 hover:text-primary transition-colors"
+            className="text-white/50 hover:text-primary transition-colors"
           >
             Help Center
           </button>
           <button 
             onClick={() => setIsTermsOpen(true)}
-            className="text-white/60 hover:text-primary transition-colors"
+            className="text-white/50 hover:text-primary transition-colors"
           >
             Terms & Conditions
           </button>
@@ -56,13 +56,13 @@ const Footer = () => {
       </div>
 
       {/* Divider */}
-      <div className="w-full h-px bg-white/5 my-6 max-w-7xl mx-auto"></div>
+      <div className="w-full h-px bg-white/5 my-4 max-w-7xl mx-auto"></div>
 
       {/* Copyright & Developed By */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
-        <p>© {new Date().getFullYear()} PrepGenius AI. All rights reserved.</p>
-        <p className="flex items-center gap-1.5">
-          Developed with <Heart size={12} className="text-red-500 fill-red-500/20" /> by 
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] text-white/30">
+        <p>© {new Date().getFullYear()} PrepGenius AI. All rights.</p>
+        <p className="flex items-center gap-1">
+          Developed with <Heart size={10} className="text-red-500 fill-red-500/20" /> by 
           <span className="text-primary font-semibold hover:text-white transition-colors cursor-pointer">Vansh</span>
         </p>
       </div>
@@ -155,7 +155,7 @@ const SocialIcon = ({ icon, href }) => (
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:bg-primary/20 hover:text-primary hover:border-primary/50 transition-all duration-300 interactive"
+    className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:bg-primary/20 hover:text-primary hover:border-primary/50 transition-all duration-300 interactive"
   >
     {icon}
   </a>
