@@ -20,8 +20,15 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('token');
           }
         } catch (error) {
-          console.error("Auth verify failed:", error);
-          localStorage.removeItem('token');
+          // On network error, keep the cached user so the app doesn't break
+          if (error.code === 'ERR_NETWORK') {
+            const cached = localStorage.getItem('user');
+            if (cached) {
+              try { setUser(JSON.parse(cached)); } catch(e) {}
+            }
+          } else {
+            localStorage.removeItem('token');
+          }
         }
       }
       setLoading(false);
@@ -31,23 +38,39 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    if (res.data.success) {
-      localStorage.setItem('token', res.data.data.token);
-      setUser(res.data.data.user);
-      return res.data;
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      if (res.data.success) {
+        localStorage.setItem('token', res.data.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        setUser(res.data.data.user);
+        return res.data;
+      }
+      throw new Error(res.data.message || 'Login failed');
+    } catch (err) {
+      if (err.code === 'ERR_NETWORK') {
+        throw new Error('Cannot connect to server. Make sure the backend is running.');
+      }
+      throw new Error(err.response?.data?.message || err.message || 'Login failed');
     }
-    throw new Error(res.data.message || 'Login failed');
   };
 
   const register = async (name, email, password) => {
-    const res = await api.post('/auth/signup', { name, email, password });
-    if (res.data.success) {
-      localStorage.setItem('token', res.data.data.token);
-      setUser(res.data.data.user);
-      return res.data;
+    try {
+      const res = await api.post('/auth/signup', { name, email, password });
+      if (res.data.success) {
+        localStorage.setItem('token', res.data.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        setUser(res.data.data.user);
+        return res.data;
+      }
+      throw new Error(res.data.message || 'Registration failed');
+    } catch (err) {
+      if (err.code === 'ERR_NETWORK') {
+        throw new Error('Cannot connect to server. Make sure the backend is running.');
+      }
+      throw new Error(err.response?.data?.message || err.message || 'Registration failed');
     }
-    throw new Error(res.data.message || 'Registration failed');
   };
 
   const logout = () => {
