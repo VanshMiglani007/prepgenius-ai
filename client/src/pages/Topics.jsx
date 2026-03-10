@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search, Edit2 } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search, Edit2, BookOpen, ArrowRight } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const Topics = () => {
   const navigate = useNavigate();
@@ -169,17 +170,44 @@ const Topics = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="space-y-6">
+            <SkeletonLoader type="list-item" count={8} />
           </div>
         ) : filteredTopics.length === 0 ? (
-          <div className="text-center py-20 bg-dark-surface border border-primary/20 rounded-3xl">
-            <Search size={48} className="mx-auto text-primary/40 mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">No topics found</h3>
-            <p className="text-white/50 mb-6">You haven't added any topics for your selected criteria.</p>
-            <button onClick={() => setIsModalOpen(true)} className="btn-outline inline-flex">
-              <Plus size={16} /> Create Topic
-            </button>
+          <div className="text-center py-20 bg-dark-surface/50 border border-white/10 rounded-3xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary shadow-[0_0_20px_rgba(0,212,255,0.1)]">
+                <CheckSquare size={40} />
+              </div>
+              {subjects.length === 0 ? (
+                <>
+                  <h3 className="text-3xl font-bold mb-3">No Subjects Found</h3>
+                  <p className="text-white/60 max-w-md mx-auto mb-8 leading-relaxed">
+                    You need at least one subject before you can start breaking down your study material into masterable topics.
+                  </p>
+                  <button onClick={() => navigate('/subjects')} className="btn-outline inline-flex gap-2">
+                    <BookOpen size={16} /> Go to Subjects
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-3xl font-bold mb-3">Master Your Material</h3>
+                  <p className="text-white/60 max-w-md mx-auto mb-8 leading-relaxed">
+                    Break down your "{subjects.find(s => s._id === filterSubject)?.name || 'subjects'}" into masterable chunks. Assign est. hours and track your master level.
+                  </p>
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-10 text-sm font-medium">
+                    <div className="flex items-center gap-2 text-white/40"><Search size={16} /> Define Topic</div>
+                    <ArrowRight size={16} className="text-white/20 hidden md:block" />
+                    <div className="flex items-center gap-2 text-white/40"><CheckCircle size={16} /> Track Mastery</div>
+                  </div>
+                  <button onClick={() => setIsModalOpen(true)} className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-dark-bg font-bold rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(0,212,255,0.3)]">
+                    <Plus size={20} />
+                    Add First Topic
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-10">

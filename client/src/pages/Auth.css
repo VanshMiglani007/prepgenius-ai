@@ -3,12 +3,13 @@
     position: relative;
     width: 100%;
     max-width: 800px;
-    height: 500px;
-    border: 2px solid #00d4ff;
-    box-shadow: 0 0 25px rgba(0,212,255,0.6);
+    height: 520px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     overflow: hidden;
-    background: transparent;
-    border-radius: 8px;
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
 }
 
 .auth-wrapper .credentials-panel {
@@ -33,26 +34,66 @@
     opacity: 1;
 }
 
-.credentials-panel.signin .slide-element:nth-child(1) { transition-delay: 2.1s; }
-.credentials-panel.signin .slide-element:nth-child(2) { transition-delay: 2.2s; }
-.credentials-panel.signin .slide-element:nth-child(3) { transition-delay: 2.3s; }
-.credentials-panel.signin .slide-element:nth-child(4) { transition-delay: 2.4s; }
-.credentials-panel.signin .slide-element:nth-child(5) { transition-delay: 2.5s; }
-.credentials-panel.signin .slide-element:nth-child(6) { transition-delay: 2.55s; }
-.credentials-panel.signin .slide-element:nth-child(7) { transition-delay: 2.6s; }
+.credentials-panel.signin .slide-element:nth-child(1) {
+    transition-delay: 2.1s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(2) {
+    transition-delay: 2.2s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(3) {
+    transition-delay: 2.3s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(4) {
+    transition-delay: 2.4s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(5) {
+    transition-delay: 2.5s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(6) {
+    transition-delay: 2.55s;
+}
+
+.credentials-panel.signin .slide-element:nth-child(7) {
+    transition-delay: 2.6s;
+}
 
 .auth-wrapper.toggled .credentials-panel.signin .slide-element {
     transform: translateX(-120%);
     opacity: 0;
 }
 
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(1) { transition-delay: 0s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(2) { transition-delay: 0.1s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(3) { transition-delay: 0.2s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(4) { transition-delay: 0.3s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(5) { transition-delay: 0.35s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(6) { transition-delay: 0.4s; }
-.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(7) { transition-delay: 0.45s; }
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(4) {
+    transition-delay: 0.3s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(5) {
+    transition-delay: 0.35s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(6) {
+    transition-delay: 0.4s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signin .slide-element:nth-child(7) {
+    transition-delay: 0.45s;
+}
 
 .credentials-panel.signup {
     right: 0;
@@ -66,14 +107,37 @@
     filter: blur(10px);
 }
 
-.credentials-panel.signup .slide-element:nth-child(1) { transition-delay: 0s; }
-.credentials-panel.signup .slide-element:nth-child(2) { transition-delay: 0.1s; }
-.credentials-panel.signup .slide-element:nth-child(3) { transition-delay: 0.2s; }
-.credentials-panel.signup .slide-element:nth-child(4) { transition-delay: 0.3s; }
-.credentials-panel.signup .slide-element:nth-child(5) { transition-delay: 0.4s; }
-.credentials-panel.signup .slide-element:nth-child(6) { transition-delay: 0.5s; }
-.credentials-panel.signup .slide-element:nth-child(7) { transition-delay: 0.55s; }
-.credentials-panel.signup .slide-element:nth-child(8) { transition-delay: 0.6s; }
+.credentials-panel.signup .slide-element:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(4) {
+    transition-delay: 0.3s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(5) {
+    transition-delay: 0.4s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(6) {
+    transition-delay: 0.5s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(7) {
+    transition-delay: 0.55s;
+}
+
+.credentials-panel.signup .slide-element:nth-child(8) {
+    transition-delay: 0.6s;
+}
 
 .auth-wrapper.toggled .credentials-panel.signup .slide-element {
     transform: translateX(0%);
@@ -81,14 +145,37 @@
     filter: blur(0px);
 }
 
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(1) { transition-delay: 1.7s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(2) { transition-delay: 1.8s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(3) { transition-delay: 1.9s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(4) { transition-delay: 1.9s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(5) { transition-delay: 2.0s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(6) { transition-delay: 2.05s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(7) { transition-delay: 2.1s; }
-.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(8) { transition-delay: 2.15s; }
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(1) {
+    transition-delay: 1.7s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(2) {
+    transition-delay: 1.8s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(3) {
+    transition-delay: 1.9s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(4) {
+    transition-delay: 1.9s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(5) {
+    transition-delay: 2.0s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(6) {
+    transition-delay: 2.05s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(7) {
+    transition-delay: 2.1s;
+}
+
+.auth-wrapper.toggled .credentials-panel.signup .slide-element:nth-child(8) {
+    transition-delay: 2.15s;
+}
 
 .credentials-panel h2 {
     font-size: 32px;
@@ -119,7 +206,7 @@
 
 .field-wrapper input:focus,
 .field-wrapper input:valid {
-    border-bottom: 2px solid #00d4ff;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .field-wrapper label {
@@ -136,7 +223,7 @@
 .field-wrapper input:focus~label,
 .field-wrapper input:valid~label {
     top: -5px;
-    color: #00d4ff;
+    color: rgba(255, 255, 255, 0.5);
     font-size: 12px;
 }
 
@@ -151,31 +238,21 @@
     position: relative;
     width: 100%;
     height: 45px;
-    background: transparent;
-    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    border: 2px solid #00d4ff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
     z-index: 1;
     color: white;
+    transition: background 0.15s, border-color 0.15s;
 }
 
-.submit-button::before {
-    content: "";
-    position: absolute;
-    height: 300%;
-    width: 100%;
-    background: linear-gradient(#1a1a2e, #00d4ff, #1a1a2e, #00d4ff);
-    top: -100%;
-    left: 0;
-    z-index: -1;
-    transition: .5s;
-}
-
-.submit-button:hover::before {
-    top: 0;
+.submit-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
 }
 
 .submit-button:disabled {
@@ -192,7 +269,7 @@
 
 .switch-link a {
     text-decoration: none;
-    color: #00d4ff;
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 600;
     cursor: pointer;
 }
@@ -225,8 +302,13 @@
     filter: blur(0px);
 }
 
-.welcome-section.signin .slide-element:nth-child(1) { transition-delay: 2.0s; }
-.welcome-section.signin .slide-element:nth-child(2) { transition-delay: 2.1s; }
+.welcome-section.signin .slide-element:nth-child(1) {
+    transition-delay: 2.0s;
+}
+
+.welcome-section.signin .slide-element:nth-child(2) {
+    transition-delay: 2.1s;
+}
 
 .auth-wrapper.toggled .welcome-section.signin .slide-element {
     transform: translateX(120%);
@@ -234,8 +316,13 @@
     filter: blur(10px);
 }
 
-.auth-wrapper.toggled .welcome-section.signin .slide-element:nth-child(1) { transition-delay: 0s; }
-.auth-wrapper.toggled .welcome-section.signin .slide-element:nth-child(2) { transition-delay: 0.1s; }
+.auth-wrapper.toggled .welcome-section.signin .slide-element:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.auth-wrapper.toggled .welcome-section.signin .slide-element:nth-child(2) {
+    transition-delay: 0.1s;
+}
 
 .welcome-section.signup {
     left: 0;
@@ -251,8 +338,13 @@
     filter: blur(10px);
 }
 
-.welcome-section.signup .slide-element:nth-child(1) { transition-delay: 0s; }
-.welcome-section.signup .slide-element:nth-child(2) { transition-delay: 0.1s; }
+.welcome-section.signup .slide-element:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.welcome-section.signup .slide-element:nth-child(2) {
+    transition-delay: 0.1s;
+}
 
 .auth-wrapper.toggled .welcome-section.signup .slide-element {
     transform: translateX(0%);
@@ -260,8 +352,13 @@
     filter: blur(0);
 }
 
-.auth-wrapper.toggled .welcome-section.signup .slide-element:nth-child(1) { transition-delay: 1.7s; }
-.auth-wrapper.toggled .welcome-section.signup .slide-element:nth-child(2) { transition-delay: 1.8s; }
+.auth-wrapper.toggled .welcome-section.signup .slide-element:nth-child(1) {
+    transition-delay: 1.7s;
+}
+
+.auth-wrapper.toggled .welcome-section.signup .slide-element:nth-child(2) {
+    transition-delay: 1.8s;
+}
 
 .welcome-section h2 {
     text-transform: uppercase;
@@ -276,7 +373,7 @@
     top: -5px;
     height: 600px;
     width: 850px;
-    background: linear-gradient(45deg, #1a1a2e, #00d4ff);
+    background: linear-gradient(45deg, rgb(var(--color-bg)), rgba(255, 255, 255, 0.04));
     transform: rotate(10deg) skewY(40deg);
     transform-origin: bottom right;
     transition: 1.5s ease;
@@ -295,8 +392,8 @@
     top: 100%;
     height: 700px;
     width: 850px;
-    background: #1a1a2e;
-    border-top: 3px solid #00d4ff;
+    background: rgb(var(--color-bg));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     transform: rotate(0deg) skewY(0deg);
     transform-origin: bottom left;
     transition: 1.5s ease;
@@ -330,7 +427,8 @@
 
 @media (max-width: 650px) {
     .mascot-wrapper {
-        display: none; /* Hide on very small screens to save space */
+        display: none;
+        /* Hide on very small screens to save space */
     }
 }
 

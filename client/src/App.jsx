@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import Toaster from './components/Toaster';
@@ -11,9 +11,11 @@ import Topics from './pages/Topics';
 import StudyPlan from './pages/StudyPlan';
 import Analytics from './pages/Analytics';
 import FocusTimer from './pages/FocusTimer';
+import FocusMode from './pages/FocusMode';
 import AIAssistant from './pages/AIAssistant';
 import AdvancedCursor from './components/AdvancedCursor';
 import PageTransition from './components/PageTransition';
+import CommandPalette from './components/CommandPalette';
 import { AnimatePresence } from 'framer-motion';
 import AIBackground from './components/AIBackground';
 import { ThemeProvider } from './context/ThemeContext';
@@ -27,9 +29,9 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) return (
       <div className="p-10 text-red-500 bg-black h-screen flex flex-col justify-center items-center">
-        <h1 className="text-4xl font-bold mb-4">React App Crashed</h1>
+        <h1 className="text-4xl font-bold mb-4">Something went wrong</h1>
         <pre className="text-sm bg-gray-900 p-4 rounded overflow-auto w-full max-w-2xl">{this.state.error.message}</pre>
-        <button onClick={() => window.location.href='/dashboard'} className="mt-6 px-4 py-2 bg-primary text-black font-bold rounded">Return to Dashboard</button>
+        <button onClick={() => window.location.href = '/dashboard'} className="mt-6 px-4 py-2 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors">Return to Dashboard</button>
       </div>
     );
     return this.props.children;
@@ -38,11 +40,14 @@ class ErrorBoundary extends Component {
 
 function AppContent() {
   const location = useLocation();
+  const isFocusMode = location.pathname === '/focus';
+
   return (
-    <div className="min-h-screen bg-dark-bg text-white relative flex flex-col pt-20"> {/* pt-20 to offset fixed Header */}
+    <div className="min-h-screen text-white relative flex flex-col" style={{ paddingTop: isFocusMode ? 0 : '56px', backgroundColor: 'rgb(var(--color-bg))' }}>
       <AIBackground />
       <AdvancedCursor />
-      <Header />
+      <CommandPalette />
+      {!isFocusMode && <Header />}
       <main className="flex-1 w-full flex flex-col relative">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -53,12 +58,13 @@ function AppContent() {
             <Route path="/topics" element={<PageTransition><AuthRoute><Topics /></AuthRoute></PageTransition>} />
             <Route path="/study-plan" element={<PageTransition><AuthRoute><StudyPlan /></AuthRoute></PageTransition>} />
             <Route path="/timer" element={<PageTransition><AuthRoute><FocusTimer /></AuthRoute></PageTransition>} />
+            <Route path="/focus" element={<AuthRoute><FocusMode /></AuthRoute>} />
             <Route path="/analytics" element={<PageTransition><AuthRoute><Analytics /></AuthRoute></PageTransition>} />
             <Route path="/assistant" element={<PageTransition><AuthRoute><AIAssistant /></AuthRoute></PageTransition>} />
           </Routes>
         </AnimatePresence>
       </main>
-      <Footer />
+      {!isFocusMode && <Footer />}
       <Toaster />
     </div>
   );

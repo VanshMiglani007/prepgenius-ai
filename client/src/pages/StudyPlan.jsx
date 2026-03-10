@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, Clock, Play, AlertCircle, Sparkles, LayoutList, Calendar as CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CalendarView from '../components/CalendarView';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const StudyPlan = () => {
   const navigate = useNavigate();
@@ -137,17 +138,39 @@ const StudyPlan = () => {
              )}
 
              {!plan && !loading && (
-                <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center opacity-50 border-2 border-dashed border-white/10 rounded-2xl">
-                  <CalendarDays size={64} className="mb-4 opacity-50" />
-                  <h2 className="text-2xl font-semibold">No active study plan</h2>
-                  <p className="max-w-xs mt-2 text-sm">Configure your parameters on the left to generate an optimized schedule.</p>
+                <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-10 bg-dark-surface/30 border-2 border-dashed border-white/10 rounded-3xl group">
+                  <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+                    <CalendarDays size={40} />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 font-sans">No Active Plan</h2>
+                  <p className="max-w-md text-white/50 leading-relaxed mb-8">
+                    Set your daily availability and start date on the left. Our AI engine will crunch your topic priorities to build your perfect study roadmap.
+                  </p>
+                  
+                  <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-white/20">
+                    <div className="flex flex-col items-center gap-2">
+                       <Clock size={20} />
+                       <span>Set Hours</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                       <Sparkles size={20} />
+                       <span>AI Analysis</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                       <LayoutList size={20} />
+                       <span>Mastery Roadmap</span>
+                    </div>
+                  </div>
                 </div>
              )}
 
              {loading && (
-                <div className="h-full min-h-[400px] flex flex-col items-center justify-center">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mb-6"></div>
-                  <p className="text-primary animate-pulse font-medium tracking-wide">Crunching topic difficulty algorithms...</p>
+                <div className="space-y-8 p-4">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    <p className="text-xl font-bold text-primary animate-pulse tracking-tight">AI is optimizing your schedule...</p>
+                  </div>
+                  <SkeletonLoader type="list-item" count={6} />
                 </div>
              )}
 

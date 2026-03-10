@@ -5,26 +5,29 @@ const ThemeContext = createContext();
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(localStorage.getItem('prepgenius-theme') || 'cyan');
+  const [theme, setTheme] = useState(localStorage.getItem('prepgenius-theme') || 'ocean');
 
   const themes = [
-    { id: 'cyan', name: 'Neon Blue', primary: '0 212 255', hover: '0 184 212', bg: '26 26 46' },
-    { id: 'purple', name: 'Deep Purple', primary: '176 38 255', hover: '144 20 224', bg: '19 10 33' },
-    { id: 'emerald', name: 'Cyberpunk Emerald', primary: '16 185 129', hover: '5 150 105', bg: '6 31 21' },
-    { id: 'amber', name: 'Sunset Amber', primary: '245 158 11', hover: '217 119 6', bg: '40 20 10' },
-    { id: 'rose', name: 'Rose Pink', primary: '244 63 94', hover: '225 29 72', bg: '39 12 20' }
+    { id: 'ocean',    name: 'Ocean Blue',       primary: '56 163 220',  hover: '45 140 195',  bg: '14 16 22',   accent: '#38a3dc' },
+    { id: 'forest',   name: 'Forest Green',     primary: '74 172 120',  hover: '60 148 100',  bg: '12 18 14',   accent: '#4aac78' },
+    { id: 'midnight', name: 'Midnight Indigo',   primary: '110 120 190', hover: '90 100 170',  bg: '12 12 20',   accent: '#6e78be' },
+    { id: 'sand',     name: 'Warm Sand',        primary: '200 160 100', hover: '180 140 80',  bg: '20 17 13',   accent: '#c8a064' },
+    { id: 'slate',    name: 'Slate Gray',       primary: '140 150 165', hover: '120 130 145', bg: '16 17 20',   accent: '#8c96a5' },
   ];
 
   useEffect(() => {
     localStorage.setItem('prepgenius-theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
-    
-    // Explicitly set the CSS properties so Tailwind JIT responds immediately without page refresh
-    const activeTheme = themes.find(t => t.id === theme) || themes[0];
-    document.documentElement.style.setProperty('--color-primary', activeTheme.primary);
-    document.documentElement.style.setProperty('--color-primary-hover', activeTheme.hover);
-    document.documentElement.style.setProperty('--color-bg', activeTheme.bg);
 
+    const activeTheme = themes.find(t => t.id === theme) || themes[0];
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', activeTheme.primary);
+    root.style.setProperty('--color-primary-hover', activeTheme.hover);
+    root.style.setProperty('--color-bg', activeTheme.bg);
+
+    // Smooth transition on theme change
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    document.body.style.transition = 'background-color 0.3s ease';
   }, [theme]);
 
   const cycleTheme = () => {
@@ -33,8 +36,10 @@ export const ThemeProvider = ({ children }) => {
     setTheme(themes[nextIndex].id);
   };
 
+  const activeTheme = themes.find(t => t.id === theme) || themes[0];
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, themes }}>
+    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, themes, activeTheme }}>
       {children}
     </ThemeContext.Provider>
   );

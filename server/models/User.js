@@ -20,6 +20,22 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false,
     },
+    googleId: {
+      type: String,
+      default: null,
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    resetOtp: {
+      type: String,
+      select: false,
+    },
+    resetOtpExpiry: {
+      type: Date,
+      select: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -40,6 +56,8 @@ const userSchema = new mongoose.Schema(
     toJSON: {
       transform(doc, ret) {
         delete ret.password;
+        delete ret.resetOtp;
+        delete ret.resetOtpExpiry;
         return ret;
       },
     },
@@ -51,7 +69,6 @@ userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }
-
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

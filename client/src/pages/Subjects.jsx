@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Edit2, BookOpen, ArrowRight } from 'lucide-react';
+import { Plus, Trash2, Edit2, BookOpen, ArrowRight, ArrowBigUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const Subjects = () => {
   const navigate = useNavigate();
@@ -103,17 +104,37 @@ const Subjects = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <SkeletonLoader type="card" count={6} />
           </div>
         ) : subjects.length === 0 ? (
-          <div className="text-center py-20 bg-dark-surface border border-primary/20 rounded-3xl">
-            <BookOpen size={48} className="mx-auto text-primary/40 mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">No subjects yet</h3>
-            <p className="text-white/50 mb-6">Create your first subject to start planning your studies.</p>
-            <button onClick={() => setIsModalOpen(true)} className="btn-outline inline-flex">
-              <Plus size={16} /> Create Subject
-            </button>
+          <div className="text-center py-20 bg-dark-surface/50 border border-white/10 rounded-3xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary shadow-[0_0_20px_rgba(0,212,255,0.1)]">
+                <BookOpen size={40} />
+              </div>
+              <h3 className="text-3xl font-bold mb-3">Your Journey Starts Here</h3>
+              <p className="text-white/60 max-w-md mx-auto mb-8 leading-relaxed">
+                Add your first subject to begin. Our AI will help you break it into topics, set realistic exam dates, and calculate your optimal study load.
+              </p>
+              
+              <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-10 text-sm font-medium">
+                <div className="flex items-center gap-2 text-white/40"><Plus size={16} /> Add Subject</div>
+                <ArrowRight size={16} className="text-white/20 hidden md:block" />
+                <div className="flex items-center gap-2 text-white/40"><Target size={16} /> Set Exam Date</div>
+                <ArrowRight size={16} className="text-white/20 hidden md:block" />
+                <div className="flex items-center gap-2 text-white/40"><ArrowBigUp size={16} /> Master Topics</div>
+              </div>
+
+              <button 
+                onClick={() => setIsModalOpen(true)} 
+                className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-dark-bg font-bold rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(0,212,255,0.3)]"
+              >
+                <Plus size={20} />
+                Create First Subject
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

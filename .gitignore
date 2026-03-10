@@ -1,8 +1,8 @@
 # Environment & secrets (never commit)
 .env
-.env.*
 .env.local
 server/.env
+!*.env.example
 
 # Dependencies
 node_modules/

@@ -1,134 +1,116 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
+/**
+ * AdvancedCursor — Minimal, zero-lag custom cursor.
+ * 
+ * Just a small dot + subtle ring. No canvas, no RAF loop, no trail.
+ * Position set directly in mousemove for instant response.
+ */
 const AdvancedCursor = () => {
-  const canvasRef = useRef(null);
-  const mouse = useRef({ x: -100, y: -100 });
-  const points = useRef([]);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
+  const { theme, themes } = useTheme();
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
 
-  // Use raw motion values instead of springs to completely eliminate trailing lag
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
+  const activeTheme = themes.find(t => t.id === theme) || themes[0];
+  const rgb = activeTheme.primary;
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    resize();
+    let hovering = false;
+    let clicking = false;
 
-    const onMouseMove = (e) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
+    const move = (e) => {
+      const tx = `translate3d(${e.clientX}px,${e.clientY}px,0)`;
+      dot.style.transform = tx;
+      ring.style.transform = tx;
     };
 
-    const onMouseDown = () => setIsClicking(true);
-    const onMouseUp = () => setIsClicking(false);
-
-    const onMouseOver = (e) => {
-      const target = e.target;
-      const isInteractive = 
-        target.tagName === 'BUTTON' || 
-        target.tagName === 'A' || 
-        target.tagName === 'INPUT' || 
-        target.closest('.interactive') ||
-        target.closest('button') ||
-        target.closest('a');
-      setIsHovering(!!isInteractive);
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('mouseover', onMouseOver);
-
-    document.body.style.cursor = 'none';
-
-    let lastMousePos = { x: -100, y: -100 };
-
-    const animate = () => {
-      // Create new trail point only if mouse moved significantly to save canvas operations
-      const dist = Math.hypot(mouse.current.x - lastMousePos.x, mouse.current.y - lastMousePos.y);
-      if (dist > 2) {
-        points.current.push({ ...mouse.current, age: 0 });
-        lastMousePos = { ...mouse.current };
+    const updateRing = () => {
+      if (clicking) {
+        ring.style.width = '16px';
+        ring.style.height = '16px';
+        ring.style.margin = '-8px 0 0 -8px';
+        ring.style.opacity = '1';
+      } else if (hovering) {
+        ring.style.width = '32px';
+        ring.style.height = '32px';
+        ring.style.margin = '-16px 0 0 -16px';
+        ring.style.opacity = '0.7';
+      } else {
+        ring.style.width = '22px';
+        ring.style.height = '22px';
+        ring.style.margin = '-11px 0 0 -11px';
+        ring.style.opacity = '0.5';
       }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (points.current.length > 0) {
-        ctx.beginPath();
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#22d3ee';
-        
-        for (let i = 0; i < points.current.length; i++) {
-          const p = points.current[i];
-          p.age += 1;
-          
-          if (p.age > 15) { // shorter trail lifespan
-            points.current.splice(i, 1);
-            i--;
-            continue;
-          }
-
-          const opacity = 1 - p.age / 15;
-          ctx.strokeStyle = `rgba(34, 211, 238, ${opacity * 0.5})`;
-          
-          if (i === 0) {
-            ctx.moveTo(p.x, p.y);
-          } else {
-            ctx.lineTo(p.x, p.y);
-          }
-        }
-        ctx.stroke();
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    const isInteractive = (el) => {
+      if (!el) return false;
+      const tag = el.tagName;
+      if (tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+      if (el.closest?.('button') || el.closest?.('a') || el.closest?.('.interactive') || el.closest?.('[role="button"]')) return true;
+      return false;
+    };
+
+    const over = (e) => {
+      hovering = isInteractive(e.target);
+      updateRing();
+    };
+
+    const down = () => { clicking = true; updateRing(); };
+    const up = () => { clicking = false; updateRing(); };
+
+    window.addEventListener('mousemove', move, { passive: true });
+    window.addEventListener('mouseover', over, { passive: true });
+    window.addEventListener('mousedown', down, { passive: true });
+    window.addEventListener('mouseup', up, { passive: true });
 
     return () => {
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('mouseover', onMouseOver);
-      cancelAnimationFrame(animationFrameId);
-      document.body.style.cursor = 'auto';
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseover', over);
+      window.removeEventListener('mousedown', down);
+      window.removeEventListener('mouseup', up);
     };
   }, []);
 
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 pointer-events-none z-[999999]"
-      />
-      <motion.div
+      {/* Center dot */}
+      <div
+        ref={dotRef}
         style={{
-          x: cursorX,
-          y: cursorY,
-          left: -15,
-          top: -15,
+          position: 'fixed', top: 0, left: 0,
+          width: 5, height: 5,
+          margin: '-2.5px 0 0 -2.5px',
+          backgroundColor: `rgb(${rgb})`,
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: 999999,
+          willChange: 'transform',
+          transform: 'translate3d(-50px,-50px,0)',
         }}
-        animate={{
-          scale: isClicking ? 0.8 : isHovering ? 1.5 : 1,
+      />
+      {/* Outer ring */}
+      <div
+        ref={ringRef}
+        style={{
+          position: 'fixed', top: 0, left: 0,
+          width: 22, height: 22,
+          margin: '-11px 0 0 -11px',
+          border: `1.5px solid rgb(${rgb})`,
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: 999999,
+          willChange: 'transform',
+          opacity: 0.5,
+          transition: 'width .12s, height .12s, margin .12s, opacity .12s',
+          transform: 'translate3d(-50px,-50px,0)',
         }}
-        className="fixed w-[30px] h-[30px] pointer-events-none z-[999999] rounded-full mix-blend-screen"
-      >
-        <div className="absolute inset-0 bg-primary/20 rounded-full blur-[8px]" />
-        <div className="absolute inset-[10px] bg-primary rounded-full shadow-[0_0_15px_#00d4ff]" />
-      </motion.div>
+      />
     </>
   );
 };

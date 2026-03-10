@@ -41,9 +41,9 @@ const MascotCharacters = ({ isFocused = false, isSuccess = false, positionState 
         }}
         className="flex items-center justify-center gap-6"
       >
-        <Blob id={1} mousePos={mousePos} gradient="from-[#0f172a] to-[#06b6d4]" delay={0} isFocused={isFocused} isSuccess={isSuccess} isCurious={isCurious} />
-        <Blob id={2} mousePos={mousePos} gradient="from-[#1e293b] to-[#22d3ee]" delay={0.2} isFocused={isFocused} isSuccess={isSuccess} height="h-48" isCurious={isCurious} />
-        <Blob id={3} mousePos={mousePos} gradient="from-[#0f172a] to-[#38bdf8]" delay={0.4} isFocused={isFocused} isSuccess={isSuccess} isCurious={isCurious} />
+        <Blob id={1} mousePos={mousePos} gradient="from-dark-bg to-primary/80" delay={0} isFocused={isFocused} isSuccess={isSuccess} isCurious={isCurious} />
+        <Blob id={2} mousePos={mousePos} gradient="from-dark-bg to-primary" delay={0.2} isFocused={isFocused} isSuccess={isSuccess} height="h-48" isCurious={isCurious} />
+        <Blob id={3} mousePos={mousePos} gradient="from-dark-bg to-primary/60" delay={0.4} isFocused={isFocused} isSuccess={isSuccess} isCurious={isCurious} />
       </motion.div>
     </div>
   );
@@ -107,7 +107,7 @@ const Blob = ({ id, mousePos, gradient, delay, isFocused, isSuccess, height = "h
         rotate: rotateS,
         x: translateS,
       }}
-      className={`relative w-16 md:w-20 ${height} bg-gradient-to-t ${gradient} rounded-full shadow-[0_0_20px_rgba(34,211,238,0.3)] border border-white/10 flex flex-col items-center pt-8 cursor-pointer transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(34,211,238,0.6)]`}
+      className={`relative w-16 md:w-20 ${height} bg-gradient-to-t ${gradient} shadow-[0_0_20px_rgba(var(--color-primary),0.3)] border border-white/10 flex flex-col items-center pt-8 cursor-pointer transition-all hover:scale-105 hover:shadow-[0_0_35px_rgba(var(--color-primary),0.6)]`}
     >
       {/* Eyes Container */}
       <div className="flex gap-3">
