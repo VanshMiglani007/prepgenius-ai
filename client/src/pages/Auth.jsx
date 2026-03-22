@@ -14,7 +14,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const { login, register, user } = useAuth();
   const [isFocused, setIsFocused] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [mascotPosition, setMascotPosition] = useState('right');
@@ -58,6 +58,12 @@ const Auth = () => {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const initGoogle = () => {

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, BookOpen, Calendar, CheckCircle2, Clock, BarChart3, Target, Layers, Zap } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 /* ─── Floating Study Cards (Hero Visual) ─── */
 const floatingItems = [
@@ -224,6 +225,7 @@ const InsightsPreview = () => (
 /* ─── Landing Page ─── */
 const Landing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen text-white overflow-hidden flex flex-col relative">
@@ -284,19 +286,21 @@ const Landing = () => {
                 className="flex items-center gap-3"
               >
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate(user ? '/dashboard' : '/login')}
                   className="px-6 py-2.5 bg-white text-black text-sm font-semibold rounded-lg transition-all duration-150 hover:bg-white/90 active:scale-[0.97]"
                 >
                   <span className="flex items-center gap-2">
-                    Get Started <ArrowRight size={15} />
+                    {user ? 'Go to Dashboard' : 'Get Started'} <ArrowRight size={15} />
                   </span>
                 </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="px-6 py-2.5 text-sm text-white/50 hover:text-white/70 font-medium transition-colors duration-150"
-                >
-                  Learn more
-                </button>
+                {!user && (
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="px-6 py-2.5 text-sm text-white/50 hover:text-white/70 font-medium transition-colors duration-150"
+                  >
+                    Learn more
+                  </button>
+                )}
               </motion.div>
             </div>
 
@@ -362,13 +366,13 @@ const Landing = () => {
           viewport={{ once: true }}
           className="w-full max-w-xl text-center py-16"
         >
-          <h2 className="text-lg font-semibold mb-2">Ready to get organized?</h2>
-          <p className="text-sm text-white/30 mb-6">Free to use. Set up in under a minute.</p>
+          <h2 className="text-lg font-semibold mb-2">{user ? 'Continue where you left off' : 'Ready to get organized?'}</h2>
+          {!user && <p className="text-sm text-white/30 mb-6">Free to use. Set up in under a minute.</p>}
           <button
-            onClick={() => navigate('/login')}
-            className="px-8 py-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white/70 hover:text-white text-sm font-medium rounded-lg transition-all duration-150"
+            onClick={() => navigate(user ? '/dashboard' : '/login')}
+            className="px-8 py-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white/70 hover:text-white text-sm font-medium rounded-lg transition-all duration-150 mt-6"
           >
-            Create your study plan →
+            {user ? 'Go to Dashboard →' : 'Create your study plan →'}
           </button>
         </motion.div>
       </main>
