@@ -89,5 +89,31 @@
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Range input colours */
+input[type='range']::-webkit-slider-thumb {
+  background: rgb(var(--color-primary));
+}
+input[type='range']::-moz-range-thumb {
+  background: rgb(var(--color-primary));
+}
+
+/* Focus-visible ring */
+:focus-visible {
+  outline: 2px solid rgba(var(--color-primary), 0.5);
+  outline-offset: 2px;
+}
+
+/* Utility shims used across the app */
+.text-primary   { color: rgb(var(--color-primary)); }
+.bg-primary     { background-color: rgb(var(--color-primary)); }
+.border-primary { border-color: rgb(var(--color-primary)); }
+.bg-dark-bg      { background-color: rgb(var(--color-bg)); }
+.bg-dark-surface { background-color: rgba(255,255,255,0.03); }
+.text-dark-bg    { color: rgb(var(--color-bg)); }

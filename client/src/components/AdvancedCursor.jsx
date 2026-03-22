@@ -15,6 +15,15 @@ const AdvancedCursor = () => {
   const activeTheme = themes.find(t => t.id === theme) || themes[0];
   const rgb = activeTheme.primary;
 
+  // Update cursor color whenever theme changes
+  useEffect(() => {
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
+    dot.style.backgroundColor = `rgb(${rgb})`;
+    ring.style.borderColor = `rgb(${rgb})`;
+  }, [rgb]);
+
   useEffect(() => {
     const dot = dotRef.current;
     const ring = ringRef.current;

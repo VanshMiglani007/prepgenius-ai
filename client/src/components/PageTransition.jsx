@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 const PageTransition = ({ children }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      transition={{ 
-        duration: 0.25, 
-        ease: [0.23, 1, 0.32, 1] // Polished cubic-bezier
+      exit={{ opacity: 0, y: -6 }}
+      transition={{
+        duration: 0.2,
+        ease: [0.25, 0.46, 0.45, 0.94]
       }}
       className="w-full min-h-screen relative"
     >

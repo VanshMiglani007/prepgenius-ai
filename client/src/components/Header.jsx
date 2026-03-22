@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogIn, LogOut, Palette, Brain, ChevronDown, User, Settings, Bell } from 'lucide-react';
+import { LogIn, LogOut, Palette, Brain, ChevronDown, Settings, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import SettingsModal from './SettingsModal';
@@ -90,12 +90,18 @@ const Header = () => {
                   <button
                     key={link.path}
                     onClick={() => navigate(link.path)}
-                    className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${isActive(link.path)
-                        ? 'text-white bg-white/10'
-                        : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                    className={`relative px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${isActive(link.path)
+                        ? 'text-white'
+                        : 'text-white/45 hover:text-white hover:bg-white/[0.04]'
                       }`}
                   >
                     {link.label}
+                    {isActive(link.path) && (
+                      <span
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                        style={{ background: `rgb(${themes.find(t => t.id === theme)?.primary || '56 163 220'})` }}
+                      />
+                    )}
                   </button>
                 ))}
             </nav>
@@ -229,13 +235,8 @@ const Header = () => {
 
                       <div className="py-1">
                         <DropdownItem
-                          icon={<User size={14} />}
-                          label="Profile"
-                          onClick={() => { setSettingsOpen(true); setProfileOpen(false); }}
-                        />
-                        <DropdownItem
                           icon={<Settings size={14} />}
-                          label="Account Settings"
+                          label="Settings"
                           onClick={() => { setSettingsOpen(true); setProfileOpen(false); }}
                         />
                       </div>
