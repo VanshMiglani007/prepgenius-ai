@@ -8,6 +8,10 @@
     "dev": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "nodemonConfig": {
+    "watch": ["server/"],
+    "ignore": ["client/", "node_modules/", ".git/"]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

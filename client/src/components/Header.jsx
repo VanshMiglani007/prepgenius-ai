@@ -15,16 +15,19 @@ const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const profileRef = useRef(null);
   const themeRef = useRef(null);
+  const notifRef = useRef(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
       if (themeRef.current && !themeRef.current.contains(e.target)) setThemeOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotificationsOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -44,7 +47,7 @@ const Header = () => {
   };
 
   const navLinks = [
-    { label: 'Home', path: user ? '/dashboard' : '/' },
+    { label: 'Home', path: '/' },
     { label: 'Dashboard', path: '/dashboard', auth: true },
     { label: 'Planner', path: '/study-plan', auth: true },
     { label: 'Focus', path: '/focus', auth: true },
@@ -102,14 +105,34 @@ const Header = () => {
           <div className="flex items-center gap-2">
             {/* Notifications (only when logged in) */}
             {user && (
-              <button
-                title="Notifications"
-                className="relative w-8 h-8 flex items-center justify-center rounded-md text-white/40 hover:text-white hover:bg-white/[0.06] transition-colors"
-              >
-                <Bell size={16} />
-                {/* Unread dot */}
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-400" />
-              </button>
+              <div className="relative" ref={notifRef}>
+                <button
+                  onClick={() => { setNotificationsOpen(!notificationsOpen); setProfileOpen(false); setThemeOpen(false); }}
+                  title="Notifications"
+                  className="relative w-8 h-8 flex items-center justify-center rounded-md text-white/40 hover:text-white hover:bg-white/[0.06] transition-colors"
+                >
+                  <Bell size={16} />
+                </button>
+                <AnimatePresence>
+                  {notificationsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute right-0 mt-2 w-64 rounded-lg border border-white/10 overflow-hidden py-2"
+                      style={{ backgroundColor: 'rgba(18,18,30,0.96)', backdropFilter: 'blur(16px)' }}
+                    >
+                      <div className="px-4 pb-2 border-b border-white/10">
+                        <p className="text-sm font-semibold text-white">Notifications</p>
+                      </div>
+                      <div className="px-4 py-6 text-center">
+                        <p className="text-[13px] text-white/50">No new notifications</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
 
             {/* Theme switcher */}
