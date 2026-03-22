@@ -1,5 +1,6 @@
 const Subject = require("../models/Subject");
 const Topic = require("../models/Topic");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const chatWithAssistant = async (req, res) => {
   try {
@@ -20,44 +21,51 @@ const chatWithAssistant = async (req, res) => {
     // Extract subject names for keyword matching
     const subjectMatches = subjects.filter(s => message.toLowerCase().includes(s.name.toLowerCase()));
 
-    let aiResponse = "";
+    const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY || "dummy_key");
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+    // Build context
+    let dbContext = `The user is preparing for the following subjects: ${subjects.map(s => s.name).join(', ')}. `;
+    if (totalTopics > 0) {
+       dbContext += `Out of ${totalTopics} total topics, they have mastered ${completedTopics}. `;
+    }
+    
+    // Check specific subjects
     if (subjectMatches.length > 0) {
-        const targetSubject = subjectMatches[0];
-        const targetTopics = topics.filter(t => t.subjectId.toString() === targetSubject._id.toString());
-        const remainingTopics = targetTopics.filter(t => t.completionStatus !== 'completed');
-        
-        const daysLeft = targetSubject.examDate ? Math.max(1, Math.ceil((new Date(targetSubject.examDate) - new Date()) / (1000 * 60 * 60 * 24))) : 'unknown';
+      const targetSubject = subjectMatches[0];
+      const targetTopics = topics.filter(t => t.subjectId.toString() === targetSubject._id.toString());
+      const remainingTopics = targetTopics.filter(t => t.completionStatus !== 'completed');
+      const daysLeft = targetSubject.examDate ? Math.max(1, Math.ceil((new Date(targetSubject.examDate) - new Date()) / (1000 * 60 * 60 * 24))) : 'unknown';
 
-        aiResponse = `To prepare for **${targetSubject.name}**, you have ${remainingTopics.length} topics remaining out of ${targetTopics.length}. `;
-        if (daysLeft !== 'unknown') {
-            aiResponse += `Your exam is in ${daysLeft} days! `;
-        }
-        
-        if (remainingTopics.length > 0) {
-            const highPriority = remainingTopics.filter(t => t.priority === 'High' || t.difficulty === 'hard');
-            if (highPriority.length > 0) {
-                 aiResponse += `I strongly suggest starting with high-priority topics like: ${highPriority.map(t => t.name).join(', ')}. `;
-            } else {
-                 aiResponse += `I suggest starting with: ${remainingTopics[0].name}. `;
-            }
-        } else {
-            aiResponse += `Great job! You have completed all topics for this subject. I recommend using the Pomodoro timer to review.`;
-        }
-    } else if (message.toLowerCase().includes("progress") || message.toLowerCase().includes("how am i doing")) {
-         const percent = totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100);
-         aiResponse = `You have completed ${percent}% of your total syllabus (${completedTopics} out of ${totalTopics} topics). Keep up the great work!`;
-    } else {
-         aiResponse = `I am your PrepGenius AI. I can analyze your study progress, tell you how to prepare for specific subjects like "${subjects[0]?.name || 'Math'}", and remind you of exam dates!`;
+      dbContext += `They asked about ${targetSubject.name}. It has ${remainingTopics.length} remaining topics. Exam is in ${daysLeft} days. `;
+      if (remainingTopics.length > 0) {
+         dbContext += `High priority topics to review: ${remainingTopics.slice(0, 3).map(t => t.name).join(', ')}. `;
+      }
     }
 
-    // Simulate network delay for "AI thinking"
-    setTimeout(() => {
-        res.status(200).json({
-            success: true,
-            data: { reply: aiResponse }
-        });
-    }, 1000);
+    const prompt = `You are the "PrepGenius AI", an expert multi-agent study assistant in a modern web app. Keep your answer VERY CONCISE, under 3 sentences unless asked for a detailed list. Use friendly, motivational tone.
+Database Context: ${dbContext}
+User Question: "${message}"`;
+
+    let aiResponse = "";
+    
+    try {
+      if (!process.env.AI_API_KEY) {
+        throw new Error("No AI_API_KEY configured.");
+      }
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      aiResponse = response.text();
+    } catch (apiErr) {
+      // Fallback if no real API key or quota exceeded
+      aiResponse = "I'm currently running in offline mode. Make sure to add `AI_API_KEY` to your backend `.env` file to unlock my full brain! As a tip, try reviewing your high-priority topics first.";
+      console.warn("AI fallback used because:", apiErr.message);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { response: aiResponse }
+    });
 
   } catch (error) {
     console.error("AI Assistant error:", error);

@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, CheckCircle, Circle, CheckSquare, Search, Edit2, BookOpen, ArrowRight } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../components/SkeletonLoader';
+import { useNotification } from '../context/NotificationContext';
 
 const Topics = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [searchParams] = useSearchParams();
   const initialSubject = searchParams.get('subject') || '';
   
@@ -58,13 +60,16 @@ const Topics = () => {
     try {
       if (editingId) {
         await api.put(`/topics/${editingId}`, formData);
+        showNotification('Topic updated!', 'success');
       } else {
         await api.post('/topics', formData);
+        showNotification('Topic added!', 'success');
       }
       closeModal();
-      fetchData(); // refresh
+      fetchData();
     } catch (err) {
       console.error("Failed to save topic:", err);
+      showNotification('Failed to save topic. Try again.', 'error');
     }
   };
 
@@ -98,24 +103,26 @@ const Topics = () => {
       setTopics(topics.filter(t => t._id !== topicToDelete));
       setIsDeleteModalOpen(false);
       setTopicToDelete(null);
+      showNotification('Topic deleted.', 'success');
     } catch (err) {
       console.error("Failed to delete topic:", err);
+      showNotification('Failed to delete topic.', 'error');
     }
   };
 
+
   const toggleCompletion = async (id, currentStatus) => {
+    const updatedStatus = currentStatus === 'completed' ? 'not_started' : 'completed';
+    // Optimistic UI update
+    setTopics(topics.map(t =>
+      t._id === id ? { ...t, completionStatus: updatedStatus } : t
+    ));
     try {
-      // Toggle string boolean status ('completed' vs 'not_started') 
-      // Assumption based on standard completed statuses, adjusting local state instantly
-      const updatedStatus = currentStatus === 'completed' ? 'not_started' : 'completed';
-      
-      // Optimistic UI update
-      setTopics(topics.map(t => 
-        t._id === id ? { ...t, completionStatus: updatedStatus } : t
-      ));
-      
       await api.put(`/topics/${id}`, { completionStatus: updatedStatus });
-      fetchData(); // Sync backend effects like spaced repetition trigger
+      if (updatedStatus === 'completed') {
+        showNotification('✅ Topic marked as complete!', 'success');
+      }
+      fetchData();
     } catch (err) {
        console.error("Failed to update status:", err);
        fetchData(); // Revert on fail

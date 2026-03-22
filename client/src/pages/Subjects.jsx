@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit2, BookOpen, ArrowRight, ArrowBigUp, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../components/SkeletonLoader';
+import { useNotification } from '../context/NotificationContext';
 
 const Subjects = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,13 +40,16 @@ const Subjects = () => {
     try {
       if (editingId) {
         await api.put(`/subjects/${editingId}`, formData);
+        showNotification('Subject updated successfully!', 'success');
       } else {
         await api.post('/subjects', formData);
+        showNotification('Subject created!', 'success');
       }
       closeModal();
       fetchSubjects();
     } catch (err) {
       console.error("Failed to save subject:", err);
+      showNotification('Failed to save subject. Please try again.', 'error');
     }
   };
 
@@ -77,8 +82,10 @@ const Subjects = () => {
       setSubjects(subjects.filter(sub => sub._id !== subjectToDelete));
       setIsDeleteModalOpen(false);
       setSubjectToDelete(null);
+      showNotification('Subject deleted.', 'success');
     } catch (err) {
       console.error("Failed to delete subject:", err);
+      showNotification('Failed to delete subject.', 'error');
     }
   };
 

@@ -176,7 +176,17 @@ const StudyPlan = () => {
 
              {!loading && plan && plan.schedule && (
                <>
-                 {viewMode === 'list' ? (
+                 {plan.schedule.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center p-10 mt-4 bg-dark-surface/50 border border-white/5 rounded-2xl text-center">
+                     <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4 text-emerald-400">
+                       <Sparkles size={32} />
+                     </div>
+                     <h3 className="text-2xl font-bold mb-2">You're All Caught Up!</h3>
+                     <p className="text-white/50 max-w-sm">
+                       There are no remaining topics to schedule based on your current subjects. Great work!
+                     </p>
+                   </div>
+                 ) : viewMode === 'list' ? (
                    <motion.div 
                      initial="hidden" animate="show"
                      variants={{ show: { transition: { staggerChildren: 0.1 } } }}

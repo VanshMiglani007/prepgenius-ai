@@ -40,6 +40,27 @@ const SettingsModal = ({ isOpen, onClose }) => {
       return saved ? JSON.parse(saved) : { reminders: true, reports: true, insights: false };
    });
 
+   // Integrations
+   const [integrations, setIntegrations] = useState(() => {
+      const saved = localStorage.getItem('prepgenius-integrations');
+      return saved ? JSON.parse(saved) : { googleCalendar: false, notion: false };
+   });
+   const [intLoading, setIntLoading] = useState({});
+
+   const toggleIntegration = (key, label) => {
+      setIntLoading(prev => ({ ...prev, [key]: true }));
+      setTimeout(() => {
+         const updated = { ...integrations, [key]: !integrations[key] };
+         setIntegrations(updated);
+         localStorage.setItem('prepgenius-integrations', JSON.stringify(updated));
+         setIntLoading(prev => ({ ...prev, [key]: false }));
+         showNotification(
+           updated[key] ? `${label} connected!` : `${label} disconnected.`,
+           updated[key] ? 'success' : 'info'
+         );
+      }, 900);
+   };
+
    const toggleNotif = (key) => {
       const updated = { ...notifPrefs, [key]: !notifPrefs[key] };
       setNotifPrefs(updated);
@@ -255,15 +276,48 @@ const SettingsModal = ({ isOpen, onClose }) => {
                               <h3 className="text-xl font-bold mb-1">Integrations</h3>
                               <p className="text-white/40 text-sm">Connect your study schedule with other apps.</p>
                            </div>
-                           <div className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                 <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-lg font-bold text-black">G</div>
-                                 <div>
-                                    <h4 className="font-medium text-sm">Google Calendar</h4>
-                                    <p className="text-xs text-white/40 mt-0.5">Sync study sessions</p>
-                                 </div>
-                              </div>
-                              <button className="text-xs text-primary hover:underline">Connect</button>
+                           <div className="space-y-3">
+                              {[
+                                { key: 'googleCalendar', label: 'Google Calendar', desc: 'Sync study sessions to your calendar', logo: 'G', logoColor: '#4285F4' },
+                                { key: 'notion', label: 'Notion', desc: 'Export your study plan to Notion pages', logo: 'N', logoColor: '#ffffff' },
+                              ].map(({ key, label, desc, logo, logoColor }) => {
+                                const connected = integrations[key];
+                                const loading = intLoading[key];
+                                return (
+                                  <div key={key} className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] flex items-center justify-between group hover:border-white/10 transition-colors">
+                                     <div className="flex items-center gap-3">
+                                        <div
+                                          className="w-9 h-9 rounded-lg flex items-center justify-center text-base font-bold"
+                                          style={{ backgroundColor: logoColor === '#ffffff' ? '#1f1f1f' : logoColor, color: logoColor === '#ffffff' ? '#fff' : '#fff' }}
+                                        >{logo}</div>
+                                        <div>
+                                           <div className="flex items-center gap-2">
+                                              <h4 className="font-medium text-sm">{label}</h4>
+                                              {connected && (
+                                                <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider border border-emerald-500/20">Connected</span>
+                                              )}
+                                           </div>
+                                           <p className="text-xs text-white/40 mt-0.5">{desc}</p>
+                                        </div>
+                                     </div>
+                                     <button
+                                       disabled={loading}
+                                       onClick={() => toggleIntegration(key, label)}
+                                       className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all disabled:opacity-50 ${
+                                         connected
+                                           ? 'border-white/10 text-white/40 hover:text-red-400 hover:border-red-400/30 bg-white/[0.03]'
+                                           : 'border-primary/40 text-primary bg-primary/10 hover:bg-primary/20'
+                                       }`}
+                                     >
+                                       {loading ? '...' : connected ? 'Disconnect' : 'Connect'}
+                                     </button>
+                                  </div>
+                                );
+                              })}
+                           </div>
+                           <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.04] text-xs text-white/25 flex items-start gap-2">
+                              <span className="mt-0.5">ℹ</span>
+                              <span>Integrations store state locally. Full sync requires a backend OAuth setup.</span>
                            </div>
                         </div>
                      )}

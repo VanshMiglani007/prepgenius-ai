@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Play, Pause, RotateCcw, Target, AlertCircle } from 'lucide-react';
+import { Play, Pause, RotateCcw, Target, AlertCircle, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import { useNotification } from '../context/NotificationContext';
 
 const FocusTimer = () => {
   const { user } = useAuth();
+  const { activeTheme } = useTheme();
+  const { showNotification } = useNotification();
+  const primaryColor = `rgb(${activeTheme.primary})`;
   const [searchParams] = useSearchParams();
   const initialTopic = searchParams.get('topic') || '';
 
@@ -54,8 +59,6 @@ const FocusTimer = () => {
 
   const handleTimerComplete = async () => {
     setIsActive(false);
-    
-    // Stop the study session in background
     if (sessionId) {
       try {
         await api.put(`/sessions/${sessionId}/end`);
@@ -64,14 +67,12 @@ const FocusTimer = () => {
         console.error("Failed to end session:", err);
       }
     }
-
     if (!isBreak) {
-      // Finished working, start break
+      showNotification('🎉 Focus session complete! Take a break.', 'success', 5000);
       setIsBreak(true);
       setTimeLeft(BREAK_TIME);
-      // Automatically maybe? Lets just reset and let user start break
     } else {
-      // Finished break, back to work
+      showNotification('⚡ Break over. Ready to focus again!', 'info', 4000);
       setIsBreak(false);
       setTimeLeft(WORK_TIME);
     }
@@ -87,7 +88,6 @@ const FocusTimer = () => {
     if (!isActive) {
       // Starting
       if (!isBreak && !sessionId) {
-        // Log start of work session to DB
         try {
           const res = await api.post('/sessions/start', {
             topicId: selectedTopic,
@@ -95,6 +95,8 @@ const FocusTimer = () => {
           });
           if (res.data.success) {
             setSessionId(res.data.data.session._id);
+            const topicName = topics.find(t => t._id === selectedTopic)?.name || 'topic';
+            showNotification(`🎯 Starting session: ${topicName}`, 'info', 3000);
           }
         } catch (err) {
           console.error("Failed to start session:", err);
@@ -195,7 +197,9 @@ const FocusTimer = () => {
         {/* Timer Circle */}
         <div className="w-72 h-72 md:w-96 md:h-96 relative">
            {/* Glow Effect */}
-           <div className={`absolute inset-0 rounded-full blur-[60px] opacity-20 transition-colors duration-1000 ${isBreak ? 'bg-green-500' : 'bg-primary'}`}></div>
+           <div className={`absolute inset-0 rounded-full blur-[60px] opacity-20 transition-colors duration-1000 ${isBreak ? 'bg-green-500' : ''}`}
+             style={!isBreak ? { backgroundColor: primaryColor } : {}}
+           ></div>
            
            <CircularProgressbar
               value={getPercentage()}
@@ -203,7 +207,7 @@ const FocusTimer = () => {
               strokeWidth={4}
               styles={buildStyles({
                 textColor: '#fff',
-                pathColor: isBreak ? '#4ade80' : '#00d4ff',
+                pathColor: isBreak ? '#4ade80' : primaryColor,
                 trailColor: 'rgba(255,255,255,0.05)',
                 pathTransitionDuration: 0.5,
               })}

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Target, BarChart2, TrendingUp, Calendar, Clock } from 'lucide-react';
 import api from '../services/api';
+import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ActivityHeatmap from '../components/ActivityHeatmap';
 
 const Analytics = () => {
   const { user } = useAuth();
+  const { activeTheme } = useTheme();
+  const primaryColor = `rgb(${activeTheme.primary})`;
   const [stats, setStats] = useState({
     topicsCompleted: 0,
     totalTopics: 0,
@@ -64,47 +68,35 @@ const Analytics = () => {
           <p className="text-white/60">Visualize your productivity, track study hours, and monitor completed topics.</p>
         </div>
         
-        {/* Top Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 relative z-10">
-          <div className="bg-dark-surface border-t-4 border-primary p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
+        {[  
+          { label: "Today's Focus", value: `${stats.dailyStudyHours}`, unit: 'hrs', sub: `${stats.dailyStudyHours > 0 ? 'Active today' : 'No sessions yet'}`, color: primaryColor, icon: <Clock size={20} className="text-primary" />, border: 'border-primary' },
+          { label: "Productivity Level", value: `${stats.productivityScore}`, unit: '%', sub: null, color: '#818cf8', icon: <BarChart2 size={20} className="text-indigo-400" />, border: 'border-indigo-400', progress: stats.productivityScore, progressColor: 'bg-indigo-400' },
+          { label: "Topics Mastered", value: `${stats.topicsCompleted}`, unit: `/ ${stats.totalTopics}`, sub: 'Total active curriculum', color: '#34d399', icon: <Calendar size={20} className="text-emerald-400" />, border: 'border-emerald-400' },
+          { label: "Overall Progress", value: `${stats.overallProgress}`, unit: '%', sub: null, color: '#e879f9', icon: <TrendingUp size={20} className="text-fuchsia-400" />, border: 'border-fuchsia-400', progress: stats.overallProgress, progressColor: 'bg-fuchsia-400' },
+        ].map((card, i) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08, duration: 0.3 }}
+            className={`bg-dark-surface border-t-4 ${card.border} p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg`}
+          >
             <div className="flex justify-between items-start mb-4">
-              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Today's Focus</h4>
-              <Clock size={20} className="text-primary" />
+              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">{card.label}</h4>
+              {card.icon}
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.dailyStudyHours} <span className="text-lg text-white/30 font-medium">hrs</span></p>
-            <p className="text-xs text-green-400">+1.2 hrs from yesterday</p>
-          </div>
-          
-          <div className="bg-dark-surface border-t-4 border-indigo-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
-            <div className="flex justify-between items-start mb-4">
-              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Productivity Level</h4>
-              <BarChart2 size={20} className="text-indigo-400" />
-            </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.productivityScore}%</p>
-            <div className="w-full bg-white/10 rounded-full h-1.5 mt-2">
-              <div className="bg-indigo-400 h-1.5 rounded-full" style={{ width: `${stats.productivityScore}%` }}></div>
-            </div>
-          </div>
-          
-          <div className="bg-dark-surface border-t-4 border-emerald-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
-            <div className="flex justify-between items-start mb-4">
-              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Topics Mastered</h4>
-              <Calendar size={20} className="text-emerald-400" />
-            </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.topicsCompleted} <span className="text-lg text-white/30 font-medium">/ {stats.totalTopics}</span></p>
-            <p className="text-xs text-white/40">Total active curriculum</p>
-          </div>
-
-          <div className="bg-dark-surface border-t-4 border-fuchsia-400 p-6 rounded-2xl hover:-translate-y-1 transition-transform shadow-lg">
-            <div className="flex justify-between items-start mb-4">
-              <h4 className="text-xs uppercase tracking-wider text-white/50 font-semibold">Overall Course Progress</h4>
-              <TrendingUp size={20} className="text-fuchsia-400" />
-            </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.overallProgress}%</p>
-            <div className="w-full bg-white/10 rounded-full h-1.5 mt-2">
-              <div className="bg-fuchsia-400 h-1.5 rounded-full" style={{ width: `${stats.overallProgress}%` }}></div>
-            </div>
-          </div>
+            <p className="text-4xl font-bold text-white mb-1 tabular-nums">
+              {card.value} <span className="text-lg text-white/30 font-medium">{card.unit}</span>
+            </p>
+            {card.sub && <p className="text-xs text-white/40">{card.sub}</p>}
+            {card.progress !== undefined && (
+              <div className="w-full bg-white/10 rounded-full h-1.5 mt-2">
+                <div className={`${card.progressColor} h-1.5 rounded-full transition-all duration-1000`} style={{ width: `${card.progress}%` }} />
+              </div>
+            )}
+          </motion.div>
+        ))}
         </div>
 
         {/* Heatmap Section */}
@@ -125,11 +117,11 @@ const Analytics = () => {
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} dy={10} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
                     <Tooltip 
-                      cursor={{ fill: 'rgba(0,212,255,0.05)' }}
+                      cursor={{ fill: `${primaryColor.replace(')', ', 0.05)').replace('rgb', 'rgba')}` }}
                       contentStyle={{ backgroundColor: '#1a1a2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }}
-                      itemStyle={{ color: '#00d4ff', fontWeight: 'bold' }}
+                      itemStyle={{ color: primaryColor, fontWeight: 'bold' }}
                     />
-                    <Bar dataKey="hours" name="Study Hours" fill="#00d4ff" radius={[6, 6, 0, 0]} maxBarSize={50} />
+                    <Bar dataKey="hours" name="Study Hours" fill={primaryColor} radius={[6, 6, 0, 0]} maxBarSize={50} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
