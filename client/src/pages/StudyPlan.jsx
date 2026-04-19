@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, Clock, Play, AlertCircle, Sparkles, LayoutList, Calendar as CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CalendarView from '../components/CalendarView';
-import SkeletonLoader from '../components/SkeletonLoader';
 
 const StudyPlan = () => {
   const navigate = useNavigate();
@@ -12,13 +11,12 @@ const StudyPlan = () => {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'calendar'
+  const [viewMode, setViewMode] = useState('list');
 
   const generatePlan = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
     try {
       const res = await api.post('/study-plan/generate', formData);
       if (res.data.success) {
@@ -28,240 +26,233 @@ const StudyPlan = () => {
       }
     } catch (err) {
       console.error(err);
-      setError('Error communicating with the planner engine. Ensure you have uncompleted Subjects and Topics active first.');
+      setError('Error communicating with the planner. Ensure you have active Subjects and Topics first.');
     } finally {
       setLoading(false);
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { duration: 0.4 } }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-dark-bg text-white font-sans">
-      <main className="flex-1 p-10 max-w-7xl mx-auto w-full pt-24">
+    <div className="page-container">
+      <main className="page-content !max-w-7xl">
         
-        {/* Header Setup */}
-        <div className="flex flex-col md:flex-row gap-10 items-start">
-          <div className="w-full md:w-1/3 space-y-8 sticky top-10">
-            <div>
-              <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-                <CalendarDays className="text-primary" size={32} />
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Left Sidebar */}
+          <div className="w-full lg:w-80 flex-shrink-0 space-y-6 lg:sticky lg:top-20">
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+              <h1 className="page-title text-2xl">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <CalendarDays className="text-primary" size={20} />
+                </div>
                 Study Planner
               </h1>
-              <p className="text-white/60 text-sm">Our AI analyzes your exam urgency and topic difficulty to create the optimal study schedule.</p>
-            </div>
+              <p className="page-description mt-1.5">AI analyzes your exam urgency and topic difficulty to build the optimal schedule.</p>
+            </motion.div>
 
-            <div className="bg-dark-surface border border-primary/30 rounded-2xl p-6 shadow-[0_0_20px_rgba(0,212,255,0.05)]">
-               <form onSubmit={generatePlan} className="space-y-6">
-                 <div>
-                   <label className="block text-xs uppercase tracking-wider text-white/60 mb-2 font-semibold">Hours Per Day available</label>
-                   <div className="flex items-center gap-3">
-                     <Clock className="text-primary/70" size={20} />
-                     <input 
-                       type="number" 
-                       min="1" max="16" step="0.5"
-                       value={formData.hoursPerDay}
-                       onChange={(e) => setFormData({...formData, hoursPerDay: Number(e.target.value)})}
-                       className="w-full bg-dark-bg border border-white/20 rounded-lg px-4 py-2 text-white outline-none focus:border-primary transition-colors text-lg"
-                     />
-                   </div>
-                 </div>
-
-                 <div>
-                   <label className="block text-xs uppercase tracking-wider text-white/60 mb-2 font-semibold">Start Date</label>
-                   <input 
-                     type="date" 
-                     value={formData.startDate}
-                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                     className="w-full bg-dark-bg border border-white/20 rounded-lg px-4 py-2 text-white outline-none focus:border-primary transition-colors [color-scheme:dark] text-lg"
-                   />
-                 </div>
-
-                 <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full relative overflow-hidden group inline-flex items-center justify-center gap-2 bg-primary text-dark-bg font-bold rounded-xl py-3 text-lg transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
-                 >
-                   <span className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
-                   {loading ? 'Analyzing...' : 'Generate New Plan'}
-                   <Sparkles size={18} />
-                 </button>
-               </form>
-               {error && (
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex gap-2 text-sm text-red-200">
-                    <AlertCircle size={16} className="shrink-0 mt-0.5" />
-                    <span>{error}</span>
-                 </motion.div>
-               )}
-            </div>
-            
-            {/* Quick Stats Panel */}
-            {plan && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-2 gap-4"
-              >
-                <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
-                   <p className="text-xs text-primary uppercase tracking-wider mb-1">Total Days</p>
-                   <h3 className="text-3xl font-bold">{plan.totalDays}</h3>
+            {/* Generator Form */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="glass-card p-5 border-primary/20 glow-primary"
+            >
+              <form onSubmit={generatePlan} className="space-y-5">
+                <div>
+                  <label className="label-text">Hours Per Day</label>
+                  <div className="flex items-center gap-3">
+                    <Clock className="text-primary/50 flex-shrink-0" size={18} />
+                    <input 
+                      type="number" min="1" max="16" step="0.5"
+                      value={formData.hoursPerDay}
+                      onChange={(e) => setFormData({...formData, hoursPerDay: Number(e.target.value)})}
+                      className="input-field !text-lg"
+                    />
+                  </div>
                 </div>
-                <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
-                   <p className="text-xs text-primary uppercase tracking-wider mb-1">Total Hours</p>
-                   <h3 className="text-3xl font-bold">{plan.totalHours}</h3>
+
+                <div>
+                  <label className="label-text">Start Date</label>
+                  <input 
+                    type="date" value={formData.startDate}
+                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                    className="input-field [color-scheme:dark]"
+                  />
+                </div>
+
+                <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-sm">
+                  {loading ? (
+                    <><span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Analyzing...</>
+                  ) : (
+                    <><Sparkles size={16} /> Generate Plan</>
+                  )}
+                </button>
+              </form>
+
+              {error && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 p-3 bg-red-500/8 border border-red-500/15 rounded-xl flex gap-2 text-xs text-red-300">
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+            </motion.div>
+            
+            {/* Quick Stats */}
+            {plan && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-3">
+                <div className="glass-card p-4 text-center">
+                  <p className="label-text text-primary">Total Days</p>
+                  <h3 className="text-2xl font-bold tabular-nums">{plan.totalDays}</h3>
+                </div>
+                <div className="glass-card p-4 text-center">
+                  <p className="label-text text-primary">Total Hours</p>
+                  <h3 className="text-2xl font-bold tabular-nums">{plan.totalHours}</h3>
                 </div>
               </motion.div>
             )}
           </div>
 
-          {/* View Container */}
-          <div className="w-full md:w-2/3">
-             {plan && !loading && (
-                <div className="flex justify-end mb-6">
-                   <div className="bg-dark-surface p-1 rounded-xl border border-white/10 flex gap-1">
-                      <button 
-                        onClick={() => setViewMode('list')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-primary text-dark-bg' : 'text-white/40 hover:text-white'}`}
-                      >
-                         <LayoutList size={16} /> List
-                      </button>
-                      <button 
-                        onClick={() => setViewMode('calendar')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'calendar' ? 'bg-primary text-dark-bg' : 'text-white/40 hover:text-white'}`}
-                      >
-                         <CalendarIcon size={16} /> Calendar
-                      </button>
-                   </div>
+          {/* Right Content */}
+          <div className="flex-1 min-w-0">
+            {/* View Toggle */}
+            {plan && !loading && (
+              <div className="flex justify-end mb-5">
+                <div className="bg-white/[0.03] p-1 rounded-xl border border-white/[0.06] flex gap-1">
+                  {[
+                    { id: 'list', label: 'List', icon: <LayoutList size={14} /> },
+                    { id: 'calendar', label: 'Calendar', icon: <CalendarIcon size={14} /> },
+                  ].map(v => (
+                    <button 
+                      key={v.id}
+                      onClick={() => setViewMode(v.id)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        viewMode === v.id ? 'btn-primary !py-2 !text-xs' : 'text-white/35 hover:text-white/60'
+                      }`}
+                    >
+                      {v.icon} {v.label}
+                    </button>
+                  ))}
                 </div>
-             )}
+              </div>
+            )}
 
-             {!plan && !loading && (
-                <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-10 bg-dark-surface/30 border-2 border-dashed border-white/10 rounded-3xl group">
-                  <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-                    <CalendarDays size={40} />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-3 font-sans">No Active Plan</h2>
-                  <p className="max-w-md text-white/50 leading-relaxed mb-8">
-                    Set your daily availability and start date on the left. Our AI engine will crunch your topic priorities to build your perfect study roadmap.
-                  </p>
-                  
-                  <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-white/20">
-                    <div className="flex flex-col items-center gap-2">
-                       <Clock size={20} />
-                       <span>Set Hours</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                       <Sparkles size={20} />
-                       <span>AI Analysis</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                       <LayoutList size={20} />
-                       <span>Mastery Roadmap</span>
-                    </div>
-                  </div>
+            {/* Empty State */}
+            {!plan && !loading && (
+              <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-10 glass-card border-dashed !border-white/[0.08]">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 text-primary">
+                  <CalendarDays size={32} />
                 </div>
-             )}
-
-             {loading && (
-                <div className="space-y-8 p-4">
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                    <p className="text-xl font-bold text-primary animate-pulse tracking-tight">AI is optimizing your schedule...</p>
-                  </div>
-                  <SkeletonLoader type="list-item" count={6} />
+                <h2 className="text-2xl font-bold mb-2">No Active Plan</h2>
+                <p className="max-w-sm text-white/35 text-sm leading-relaxed mb-8">
+                  Set your daily availability and start date. Our AI engine will crunch your topic priorities to build the perfect study roadmap.
+                </p>
+                <div className="flex gap-8 text-[10px] font-semibold uppercase tracking-wider text-white/15">
+                  <div className="flex flex-col items-center gap-2"><Clock size={18} /><span>Set Hours</span></div>
+                  <div className="flex flex-col items-center gap-2"><Sparkles size={18} /><span>AI Analysis</span></div>
+                  <div className="flex flex-col items-center gap-2"><LayoutList size={18} /><span>Roadmap</span></div>
                 </div>
-             )}
+              </div>
+            )}
 
-             {!loading && plan && plan.schedule && (
-               <>
-                 {plan.schedule.length === 0 ? (
-                   <div className="flex flex-col items-center justify-center p-10 mt-4 bg-dark-surface/50 border border-white/5 rounded-2xl text-center">
-                     <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4 text-emerald-400">
-                       <Sparkles size={32} />
-                     </div>
-                     <h3 className="text-2xl font-bold mb-2">You're All Caught Up!</h3>
-                     <p className="text-white/50 max-w-sm">
-                       There are no remaining topics to schedule based on your current subjects. Great work!
-                     </p>
-                   </div>
-                 ) : viewMode === 'list' ? (
-                   <motion.div 
-                     initial="hidden" animate="show"
-                     variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-                     className="space-y-8"
-                   >
-                     {plan.schedule.map((day, dIdx) => {
-                       const dateObj = new Date(day.date);
-                       const isToday = day.date === new Date().toISOString().split('T')[0];
+            {/* Loading State */}
+            {loading && (
+              <div className="space-y-4 p-4">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                  <p className="text-sm font-semibold text-primary animate-pulse">AI is optimizing your schedule...</p>
+                </div>
+                {[1,2,3,4,5].map(i => <div key={i} className="skeleton-shimmer h-20 rounded-xl" />)}
+              </div>
+            )}
 
-                       return (
-                         <motion.div key={dIdx} variants={itemVariants} className="relative pl-8 md:pl-0">
-                            {/* Timeline Connector */}
-                            <div className="absolute left-[11px] top-10 bottom-[-40px] w-0.5 bg-white/10 hidden md:block z-0"></div>
-                            
-                            <div className="flex flex-col md:flex-row gap-6 relative z-10">
-                              {/* Date Block */}
-                              <div className="md:w-32 flex-shrink-0 pt-2 hidden md:block">
-                                <div className={`text-right pr-6 border-r-2 ${isToday ? 'border-primary' : 'border-white/20'}`}>
-                                   <p className="text-sm uppercase tracking-widest text-white/50">{dateObj.toLocaleDateString(undefined, { weekday: 'short' })}</p>
-                                   <h3 className={`text-2xl font-bold ${isToday ? 'text-primary' : ''}`}>
-                                     {dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                   </h3>
-                                   {isToday && <span className="text-[10px] bg-primary text-dark-bg px-2 py-0.5 rounded font-bold uppercase mt-1 inline-block">Today</span>}
+            {/* Plan Display */}
+            {!loading && plan && plan.schedule && (
+              <>
+                {plan.schedule.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-10 glass-card text-center">
+                    <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 text-emerald-400">
+                      <Sparkles size={28} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">You're All Caught Up!</h3>
+                    <p className="text-white/40 max-w-sm text-sm">No remaining topics to schedule. Great work!</p>
+                  </div>
+                ) : viewMode === 'list' ? (
+                  <motion.div 
+                    initial="hidden" animate="show"
+                    variants={{ show: { transition: { staggerChildren: 0.06 } } }}
+                    className="space-y-6"
+                  >
+                    {plan.schedule.map((day, dIdx) => {
+                      const dateObj = new Date(day.date);
+                      const isToday = day.date === new Date().toISOString().split('T')[0];
+                      
+                      return (
+                        <motion.div 
+                          key={dIdx} 
+                          variants={{ hidden: { opacity: 0, x: -16 }, show: { opacity: 1, x: 0, transition: { duration: 0.3 } } }}
+                          className="relative pl-0 md:pl-28"
+                        >
+                          {/* Timeline connector */}
+                          {dIdx < plan.schedule.length - 1 && (
+                            <div className="absolute left-[11px] md:left-[119px] top-10 bottom-[-24px] w-px bg-white/[0.06] hidden md:block" />
+                          )}
+                          
+                          {/* Date label (desktop) */}
+                          <div className="absolute left-0 top-2 w-24 hidden md:block text-right">
+                            <p className="text-[10px] uppercase tracking-wider text-white/30">
+                              {dateObj.toLocaleDateString(undefined, { weekday: 'short' })}
+                            </p>
+                            <h3 className={`text-lg font-bold ${isToday ? 'text-primary' : 'text-white/70'}`}>
+                              {dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            </h3>
+                            {isToday && <span className="badge badge-info !text-[8px] mt-1 inline-block">Today</span>}
+                          </div>
+
+                          {/* Mobile date header */}
+                          <div className="md:hidden flex items-center justify-between border-b border-white/[0.06] pb-2 mb-3">
+                            <h3 className="text-base font-bold text-primary">
+                              {dateObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                            </h3>
+                            <span className="text-xs text-white/30">{day.totalHours}h</span>
+                          </div>
+
+                          {/* Tasks */}
+                          <div className="space-y-2">
+                            {day.items.map((task, tIdx) => (
+                              <div key={tIdx} className="glass-card p-4 flex justify-between items-center group">
+                                <div>
+                                  <p className="text-[10px] text-primary/70 uppercase tracking-wider font-semibold mb-0.5">
+                                    {task.subjectName || 'Unassigned'}
+                                  </p>
+                                  <h4 className="text-sm font-bold">{task.topicName}</h4>
+                                  <div className="flex items-center gap-3 mt-1.5 text-[11px]">
+                                    <span className={`badge ${task.difficulty === 'High' ? 'badge-danger' : task.difficulty === 'Medium' ? 'badge-warning' : 'badge-success'} !text-[9px]`}>
+                                      {task.difficulty}
+                                    </span>
+                                    <span className="text-white/30 flex items-center gap-1">
+                                      <Clock size={10} /> {task.duration}h
+                                    </span>
+                                  </div>
                                 </div>
+                                <button 
+                                  onClick={() => navigate(`/timer?topic=${task.topicId}`)}
+                                  className="w-9 h-9 rounded-xl bg-white/[0.04] flex items-center justify-center text-white/20 hover:bg-primary hover:text-[rgb(var(--color-bg))] transition-all group-hover:scale-105"
+                                >
+                                  <Play size={14} className="ml-0.5" />
+                                </button>
                               </div>
-
-                              {/* Mobile Date Header */}
-                              <div className="md:hidden flex items-center justify-between border-b border-white/10 pb-2 mb-4">
-                                 <h3 className="text-xl font-bold text-primary">
-                                   {dateObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                                 </h3>
-                                 <span className="text-sm text-white/50">{day.totalHours} hrs</span>
-                              </div>
-
-                              {/* Tasks Container */}
-                              <div className="flex-1 space-y-3">
-                                 {day.items.map((task, tIdx) => (
-                                   <div key={tIdx} className="bg-dark-surface border border-white/5 hover:border-primary/40 transition-colors rounded-xl p-5 flex justify-between items-center group">
-                                      <div>
-                                         <p className="text-xs text-primary mb-1 uppercase tracking-wider font-semibold">{task.subjectName || 'Unassigned Subject'}</p>
-                                         <h4 className="text-lg font-bold">{task.topicName}</h4>
-                                         <div className="flex items-center gap-3 mt-2 text-xs">
-                                            <span className={`px-2 py-0.5 rounded-sm bg-white/5 font-medium
-                                              ${task.difficulty === 'High' ? 'text-red-400' : task.difficulty === 'Medium' ? 'text-yellow-400' : 'text-green-400'}
-                                            `}>
-                                              {task.difficulty}
-                                            </span>
-                                            <span className="text-white/40 flex items-center gap-1">
-                                              <Play size={10} className="opacity-60" /> {task.duration} hrs
-                                            </span>
-                                         </div>
-                                      </div>
-                                      
-                                      {/* Future feature: Launch Pomodoro directly from study plan */}
-                                      <button 
-                                        onClick={() => navigate(`/timer?topic=${task.topicId}`)}
-                                        className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:bg-primary hover:text-dark-bg transition-all group-hover:scale-110"
-                                      >
-                                        <Play size={16} className="ml-1" />
-                                      </button>
-                                   </div>
-                                 ))}
-                              </div>
-                            </div>
-                         </motion.div>
-                       );
-                     })}
-                   </motion.div>
-                 ) : (
-                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      <CalendarView schedule={plan.schedule} />
-                   </motion.div>
-                 )}
-               </>
-             )}
+                            ))}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                ) : (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <CalendarView schedule={plan.schedule} />
+                  </motion.div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </main>

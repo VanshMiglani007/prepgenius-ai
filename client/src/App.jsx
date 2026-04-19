@@ -43,7 +43,7 @@ function AppContent() {
   const isFocusMode = location.pathname === '/focus';
 
   return (
-    <div className="min-h-screen text-white relative flex flex-col" style={{ paddingTop: isFocusMode ? 0 : '56px', backgroundColor: 'rgb(var(--color-bg))' }}>
+    <div className="min-h-screen text-white relative flex flex-col" style={{ paddingTop: isFocusMode ? 0 : '64px', backgroundColor: 'rgb(var(--color-bg))' }}>
       <AIBackground />
       <AdvancedCursor />
       <CommandPalette />

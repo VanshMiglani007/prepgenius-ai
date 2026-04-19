@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 const PageTransition = ({ children }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
+      exit={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
       transition={{
-        duration: 0.2,
+        duration: 0.3,
         ease: [0.25, 0.46, 0.45, 0.94]
       }}
-      className="w-full min-h-screen relative"
+      className="w-full min-h-screen relative flex flex-col"
     >
       {children}
     </motion.div>

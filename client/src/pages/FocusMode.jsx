@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, Play, Pause, RotateCcw, CheckCircle2, ChevronDown } from 'lucide-react';
+import { X, Play, Pause, RotateCcw, CheckCircle2, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -12,22 +12,19 @@ const FocusMode = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Topic selection
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
 
-  // Timer
   const [timeLeft, setTimeLeft] = useState(FOCUS_MINUTES * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [sessions, setSessions] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const intervalRef = useRef(null);
 
-  // Notes
   const [notes, setNotes] = useState('');
 
-  // Load topics
   useEffect(() => {
     const load = async () => {
       try {
@@ -44,7 +41,6 @@ const FocusMode = () => {
     load();
   }, []);
 
-  // Timer logic
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => setTimeLeft(t => t - 1), 1000);
@@ -88,94 +84,123 @@ const FocusMode = () => {
   const totalTime = isBreak ? BREAK_MINUTES * 60 : FOCUS_MINUTES * 60;
   const progress = 1 - (timeLeft / totalTime);
 
-  // Circle progress
   const radius = 120;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <span className="text-[10px] uppercase tracking-wider text-white/20 font-medium">
-            {isBreak ? 'Break Time' : 'Focus Mode'}
-          </span>
-          <span className="text-xs text-white/30 ml-3">{sessions} sessions completed</span>
-        </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="w-8 h-8 rounded-md flex items-center justify-center text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition-colors"
-        >
-          <X size={18} />
-        </button>
+      
+      {/* Ambient background glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{ 
+            opacity: isRunning ? [0.03, 0.06, 0.03] : 0.02,
+            scale: isRunning ? [1, 1.1, 1] : 1
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] ${
+            isBreak ? 'bg-emerald-500' : 'bg-primary'
+          }`}
+        />
       </div>
 
-      {/* Main content — centered vertically */}
-      <div className="flex-1 flex items-center justify-center px-6">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-4 relative z-10">
+        <div className="flex items-center gap-3">
+          <span className={`text-[10px] uppercase tracking-wider font-semibold ${isBreak ? 'text-emerald-400' : 'text-white/25'}`}>
+            {isBreak ? '☕ Break Time' : 'Focus Mode'}
+          </span>
+          <span className="text-[10px] text-white/15">•</span>
+          <span className="text-[10px] text-white/20">{sessions} sessions</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/20 hover:text-white/40 hover:bg-white/[0.04] transition-colors"
+          >
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/20 hover:text-white/40 hover:bg-white/[0.04] transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-5xl w-full items-center">
-          {/* Left: Topic info */}
-          <div className="flex flex-col gap-4">
+          
+          {/* Left: Topic + Progress */}
+          <div className="flex flex-col gap-5">
             <div>
-              <p className="text-[10px] text-white/20 uppercase tracking-wider font-medium mb-2">Current Topic</p>
+              <p className="label-text">Current Topic</p>
               <div className="relative">
                 <button
                   onClick={() => setShowPicker(!showPicker)}
-                  className="w-full text-left bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 flex items-center justify-between hover:border-white/[0.12] transition-colors"
+                  className="w-full text-left glass-card p-3 flex items-center justify-between"
                 >
-                  <span className="text-sm font-medium text-white/70">
+                  <span className="text-sm font-medium text-white/60 truncate">
                     {selectedTopic?.name || 'No topics available'}
                   </span>
-                  <ChevronDown size={14} className="text-white/25" />
+                  <ChevronDown size={14} className={`text-white/20 transition-transform ${showPicker ? 'rotate-180' : ''}`} />
                 </button>
                 {showPicker && topics.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#111118] border border-white/[0.08] rounded-lg overflow-hidden z-10 max-h-48 overflow-y-auto">
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full left-0 right-0 mt-1 bg-[#13131f] border border-white/[0.08] rounded-xl overflow-hidden z-10 max-h-48 overflow-y-auto shadow-xl"
+                  >
                     {topics.map(t => (
                       <button
                         key={t._id}
                         onClick={() => { setSelectedTopic(t); setShowPicker(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                          selectedTopic?._id === t._id ? 'bg-white/[0.06] text-white' : 'text-white/40 hover:text-white/60 hover:bg-white/[0.03]'
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                          selectedTopic?._id === t._id ? 'bg-white/[0.06] text-white' : 'text-white/35 hover:text-white/60 hover:bg-white/[0.03]'
                         }`}
                       >
                         {t.name}
                       </button>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </div>
 
             {selectedTopic && (
-              <button
-                onClick={markComplete}
-                className="flex items-center gap-2 text-xs text-white/30 hover:text-white/60 transition-colors"
-              >
+              <button onClick={markComplete} className="btn-ghost text-xs justify-start">
                 <CheckCircle2 size={14} /> Mark as completed
               </button>
             )}
 
             <div>
-              <p className="text-[10px] text-white/20 uppercase tracking-wider font-medium mb-2">Progress</p>
-              <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-white/[0.15] rounded-full transition-all duration-500"
-                  style={{ width: `${sessions > 0 ? Math.min(100, sessions * 25) : 0}%` }}
-                />
+              <p className="label-text">Session Progress</p>
+              <div className="flex items-center gap-2 mb-1.5">
+                {[1,2,3,4].map(i => (
+                  <div 
+                    key={i} 
+                    className={`flex-1 h-1.5 rounded-full transition-all duration-500 ${
+                      i <= sessions ? 'bg-primary' : 'bg-white/[0.06]'
+                    }`}
+                  />
+                ))}
               </div>
-              <p className="text-[10px] text-white/15 mt-1">{sessions * 25}m studied today</p>
+              <p className="text-[10px] text-white/15">{sessions * 25}m studied this session</p>
             </div>
           </div>
 
           {/* Center: Timer */}
-          <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-8">
             <div className="relative w-64 h-64">
               <svg viewBox="0 0 280 280" className="w-full h-full -rotate-90">
-                <circle cx="140" cy="140" r={radius} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="4" />
+                <circle cx="140" cy="140" r={radius} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="3" />
                 <circle
                   cx="140" cy="140" r={radius} fill="none"
-                  stroke="rgba(255,255,255,0.15)"
-                  strokeWidth="4"
+                  stroke={isBreak ? 'rgba(52,211,153,0.3)' : 'rgba(var(--color-primary), 0.25)'}
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
@@ -183,40 +208,41 @@ const FocusMode = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-5xl font-mono font-light text-white/80 tracking-wider">
+                <span className="text-5xl font-mono font-extralight text-white/80 tracking-[0.1em] tabular-nums">
                   {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] text-white/20 uppercase tracking-widest mt-2">
+                <span className={`text-[10px] uppercase tracking-[0.3em] mt-2 ${isBreak ? 'text-emerald-400/50' : 'text-white/15'}`}>
                   {isBreak ? 'Break' : 'Focus'}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={reset}
-                className="w-10 h-10 rounded-full bg-white/[0.04] flex items-center justify-center text-white/30 hover:text-white/60 hover:bg-white/[0.08] transition-colors"
-              >
+            <div className="flex items-center gap-4">
+              <button onClick={reset} className="w-11 h-11 rounded-xl bg-white/[0.04] flex items-center justify-center text-white/25 hover:text-white/50 hover:bg-white/[0.08] transition-all">
                 <RotateCcw size={16} />
               </button>
-              <button
-                onClick={toggle}
-                className="w-14 h-14 rounded-full bg-white/[0.08] flex items-center justify-center text-white/70 hover:bg-white/[0.12] transition-colors"
+              <button 
+                onClick={toggle} 
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                  isRunning 
+                    ? 'bg-white/[0.06] text-white/60 hover:bg-white/[0.1]' 
+                    : 'bg-primary/15 text-primary hover:bg-primary/25 shadow-[0_0_30px_rgba(var(--color-primary),0.1)]'
+                }`}
               >
                 {isRunning ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
               </button>
-              <div className="w-10" /> {/* Spacer for symmetry */}
+              <div className="w-11" />
             </div>
           </div>
 
           {/* Right: Notes */}
-          <div className="flex flex-col h-full max-h-72">
-            <p className="text-[10px] text-white/20 uppercase tracking-wider font-medium mb-2">Notes</p>
+          <div className="flex flex-col h-full max-h-80">
+            <p className="label-text">Session Notes</p>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Write quick notes while studying..."
-              className="flex-1 w-full bg-white/[0.02] border border-white/[0.06] rounded-lg p-3 text-sm text-white/60 placeholder-white/15 resize-none outline-none focus:border-white/[0.12] transition-colors leading-relaxed"
+              className="flex-1 w-full input-field !rounded-xl resize-none leading-relaxed !py-3"
               rows={8}
             />
           </div>
