@@ -1,16 +1,38 @@
-# React + Vite
+# PrepGenius AI — Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the React.js + Vite frontend for **PrepGenius AI**.
 
-Currently, two official plugins are available:
+## Tech Stack & Libraries
+- **Framework**: React 18 with Vite
+- **Styling**: Tailwind CSS, Custom CSS Variables, Animations
+- **Icons**: Lucide React Icons (`lucide-react`)
+- **State & Context**: Custom React Context API (`AuthContext`, `ThemeContext`, `ToastContext`)
+- **Animations**: Canvas Particle Engines, Smooth Transitions & Micro-interactions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Available Scripts
 
-## React Compiler
+In the `client` directory, you can run:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install frontend dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Run Vite development server (HMR enabled)
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Build for production distribution
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+## Environment Setup
+
+Copy `.env.example` to `.env` in this directory:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+```
+
+For full documentation, please refer to the [Root README](../README.md).

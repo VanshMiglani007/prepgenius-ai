@@ -1,12 +1,31 @@
 # Environment & secrets (never commit)
 .env
 .env.local
+.env.*.local
 server/.env
+client/.env
 !*.env.example
+!server/.env.example
+!client/.env.example
 
 # Dependencies
 node_modules/
 
-# OS
+# Build & Dist Outputs
+dist/
+dist-ssr/
+build/
+*.log
+
+# Backup & temporary log/dump files
+index_backup*.html
+*.txt
+*.bak
+
+# IDE & Editor files
+.vscode/
+.idea/
+
+# OS metadata
 .DS_Store
 Thumbs.db
